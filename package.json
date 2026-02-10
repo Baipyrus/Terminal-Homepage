@@ -5,8 +5,11 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
+		"prebuild": "if [ ! -f local.db ]; then read -p \"Database not found. Initialize now? (y/N): \" resp; [[ $resp =~ ^[Yy](es)?$ ]] && npm run-script db:push; fi; exit 0",
 		"build": "vite build",
-		"postbuild": "cp package.json ./build/ && cp package-lock.json ./build/ && npm ci --omit dev --prefix ./build/",
+		"postbuild": "npm run-script postbuild:install && npm run-script postbuild:prompt",
+		"postbuild:install": "cp package.json ./build/ && cp package-lock.json ./build/ && npm ci --omit dev --prefix ./build/",
+		"postbuild:prompt": "read -p \"Do you want to run prod now? (y/N): \" resp && [[ $resp =~ ^[Yy](es)?$ ]] && npm run-script prod",
 		"prod": "node --env-file=.env ./build/",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
