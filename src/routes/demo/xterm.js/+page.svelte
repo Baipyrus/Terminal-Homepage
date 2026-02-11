@@ -10,15 +10,19 @@
 	let terminal = $state<Terminal>();
 
 	const options: ITerminalOptions & ITerminalInitOnlyOptions = {
-		// fontFamily: 'Consolas'
+		fontFamily: '"CaskaydiaCove Nerd Font", monospace',
+		fontSize: 16,
 	};
 
 	async function onLoad() {
+		await document.fonts.ready;
+
 		const fitAddon = new FitAddon();
 		terminal?.loadAddon(fitAddon);
 		fitAddon.fit();
 
-		terminal?.write('Welcome to \x1B[1;3;34mSvelteKit Terminal\x1B[0m');
+		terminal?.writeln('Welcome to \x1B[1;3;34mSvelteKit Terminal\x1B[0m!');
+		terminal?.writeln('Ligature and icon test: => ');
 	}
 </script>
 
