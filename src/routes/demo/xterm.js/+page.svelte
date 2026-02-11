@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { CATPPUCCIN_MOCHA } from '$lib/config/terminal';
 	import { Xterm } from '@battlefieldduck/xterm-svelte';
 	import type {
 		ITerminalOptions,
@@ -12,6 +13,7 @@
 	const options: ITerminalOptions & ITerminalInitOnlyOptions = {
 		fontFamily: '"CaskaydiaCove Nerd Font", monospace',
 		fontSize: 16,
+		theme: CATPPUCCIN_MOCHA
 	};
 
 	async function onLoad() {
