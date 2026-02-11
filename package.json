@@ -4,8 +4,9 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
+		"predev": "npm run-script db:init",
 		"dev": "vite dev",
-		"prebuild": "if [ ! -f local.db ]; then read -p \"Database not found. Initialize now? (y/N): \" resp; [[ $resp =~ ^[Yy](es)?$ ]] && npm run-script db:push; fi; exit 0",
+		"prebuild": "npm run-script db:init",
 		"build": "vite build",
 		"postbuild": "npm run-script postbuild:install && npm run-script postbuild:prompt",
 		"postbuild:install": "cp package.json ./build/ && cp package-lock.json ./build/ && npm ci --omit dev --prefix ./build/",
@@ -17,6 +18,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
+		"db:init": "if [ ! -f local.db ]; then read -p \"Database not found. Initialize now? (y/N): \" resp; [[ $resp =~ ^[Yy](es)?$ ]] && npm run-script db:push; fi; exit 0",
 		"db:push": "drizzle-kit push",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
