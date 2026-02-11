@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { CATPPUCCIN_MOCHA } from '$lib/config/terminal';
-	import { Xterm } from '@battlefieldduck/xterm-svelte';
-	import type {
-		ITerminalOptions,
-		ITerminalInitOnlyOptions,
-		Terminal
+	import {
+		Xterm,
+		type ITerminalOptions,
+		type ITerminalInitOnlyOptions,
+		type Terminal
 	} from '@battlefieldduck/xterm-svelte';
 	import { FitAddon } from '@xterm/addon-fit';
 	import { WebLinksAddon } from '@xterm/addon-web-links';

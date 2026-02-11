@@ -1,11 +1,11 @@
 import { fail, redirect } from '@sveltejs/kit';
-import type { Actions } from './$types';
-import type { PageServerLoad } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { auth } from '$lib/server/auth';
+import { BAD_REQUEST, FOUND } from '$lib/constants/http';
 
-export const load: PageServerLoad = async (event) => {
+export const load: PageServerLoad = (event) => {
 	if (event.locals.user) {
-		return redirect(302, '/demo/better-auth');
+		return redirect(FOUND, '/demo/better-auth');
 	}
 	return {};
 };
@@ -24,8 +24,8 @@ export const actions: Actions = {
 		});
 
 		if (result.url) {
-			return redirect(302, result.url);
+			return redirect(FOUND, result.url);
 		}
-		return fail(400, { message: 'Social sign-in failed' });
+		return fail(BAD_REQUEST, { message: 'Social sign-in failed' });
 	}
 };
