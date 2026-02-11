@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { Xterm, XtermAddon } from '@battlefieldduck/xterm-svelte';
+	import { Xterm } from '@battlefieldduck/xterm-svelte';
 	import type {
 		ITerminalOptions,
 		ITerminalInitOnlyOptions,
 		Terminal
 	} from '@battlefieldduck/xterm-svelte';
+	import { FitAddon } from '@xterm/addon-fit';
 
 	let terminal = $state<Terminal>();
 
@@ -13,7 +14,7 @@
 	};
 
 	async function onLoad() {
-		const fitAddon = new (await XtermAddon.FitAddon()).FitAddon();
+		const fitAddon = new FitAddon();
 		terminal?.loadAddon(fitAddon);
 		fitAddon.fit();
 
@@ -21,4 +22,4 @@
 	}
 </script>
 
-<Xterm class="h-screen bg-black" bind:terminal {options} {onLoad} />
+<Xterm class="h-screen w-screen" bind:terminal {options} {onLoad} />
