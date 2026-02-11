@@ -4,6 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
+		"postinstall": "if [ -e scripts/ ]; then npx tsx scripts/download-font.ts; fi; exit 0",
 		"predev": "npm run-script db:init",
 		"dev": "vite dev",
 		"prebuild": "npm run-script db:init",
@@ -47,6 +48,7 @@
 		"svelte": "^5.49.2",
 		"svelte-check": "^4.3.6",
 		"tailwindcss": "^4.1.18",
+		"tsx": "^4.21.0",
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.54.0",
 		"vite": "^7.3.1"
