@@ -7,6 +7,7 @@
 		Terminal
 	} from '@battlefieldduck/xterm-svelte';
 	import { FitAddon } from '@xterm/addon-fit';
+	import { WebLinksAddon } from '@xterm/addon-web-links';
 
 	let terminal = $state<Terminal>();
 
@@ -23,8 +24,12 @@
 		terminal?.loadAddon(fitAddon);
 		fitAddon.fit();
 
+		const webLinksAddon = new WebLinksAddon();
+		terminal?.loadAddon(webLinksAddon);
+
 		terminal?.writeln('Welcome to \x1B[1;3;34mSvelteKit Terminal\x1B[0m!');
 		terminal?.writeln('Ligature and icon test: => ');
+		terminal?.writeln('Link test: https://www.google.com/');
 	}
 </script>
 
