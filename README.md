@@ -1,42 +1,89 @@
-# sv
+# Baipyrus' Terminal Homepage
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+My personal homepage providing a focused terminal-based user interface and interactive
+experience.
 
-## Creating a project
+## Overview
 
-If you're seeing this, you've probably already done this step. Congrats!
+This project is a dedicated terminal homepage built with Svelte 5. It provides a
+pure terminal environment powered by xterm.js and a custom barebones shell, integrated
+into a modern web stack with authentication and authenticated messaging system.
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## Technical Stack
 
-To recreate this project with the same configuration:
+- Web Framework: SvelteKit 5
+- Scripting Language: TypeScript
+- Simple Styling: Tailwind CSS v4
+- Authentication: Better Auth (GitHub OAuth)
+- Database: SQLite via Drizzle ORM
+- Terminal: xterm.js via [BattlefieldDuck/xterm-svelte](https://github.com/BattlefieldDuck/xterm-svelte)
+- Theme: Catppuccin Mocha color palette (matched from the [Alacritty theme](https://github.com/catppuccin/alacritty/blob/main/catppuccin-mocha.toml))
+- Font: CaskaydiaCove Nerd Font
 
-```sh
-# recreate this project
-npx sv create --template minimal --types ts --add prettier eslint tailwindcss="plugins:none" drizzle="database:sqlite+sqlite:better-sqlite3" better-auth="demo:github" --install npm .
-```
+## Installation and Setup
 
-## Developing
+1. Clone the repository and install dependencies:
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+   ```bash
+   npm install
+   ```
 
-```sh
-npm run dev
+   > [!NOTE]
+   > Required Nerd Fonts are automatically downloaded to `static/fonts` after installation.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+2. Configure environment variables:
 
-## Building
+   ```bash
+   cp .env.example .env
+   ```
 
-To create a production version of your app:
+   > [!NOTE]
+   > All variables defined in `.env.example` are mandatory for the application to
+   > function correctly.
 
-```sh
-npm run build
-```
+## Development
 
-You can preview the production build with `npm run preview`.
+### Running the App
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- Start the local development server.
+
+  ```bash
+  npm run dev
+  ```
+
+  - **Interactive Step**: If `local.db` is not found, you will be prompted to
+    initialize the database via `db:push`.
+
+### Development Process
+
+These commands are required to ensure code quality before committing changes:
+
+- `npm run check`: Run Svelte and TypeScript diagnostic checks.
+- `npm run lint`: Verify code style and linting rules.
+- `npm run format`: Automatically format the codebase.
+
+## Production
+
+To deploy or run the application in a production-ready state:
+
+1. Build the application:
+
+   ```bash
+   npm run build
+   ```
+
+   - **Interactive Step #1**: If `local.db` is not found, you will be prompted to
+     initialize the database before building.
+   - **Interactive Step #2**: After a successful build, you will be prompted to run
+     the production server immediately.
+
+2. Start the production server:
+
+   ```bash
+   npm run prod
+   ```
+
+> [!NOTE]
+> The `npm run preview` command is not intended to support GitHub authentication,
+> as the application logic specifically targets environment variables for either
+> development or production modes.
