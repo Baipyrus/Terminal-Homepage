@@ -156,3 +156,10 @@ Thumbs.db
 
 # Fonts
 static/fonts
+
+# AI Tooling
+GEMINI.md
+.geminiignore
+CLAUDE.md
+.claudeignore
+CODEX.md
