@@ -4,16 +4,21 @@ import { sveltekitCookies } from 'better-auth/svelte-kit';
 import { env } from '$env/dynamic/private';
 import { getRequestEvent } from '$app/server';
 import { db } from '$lib/server/db';
+import { dev } from '$app/environment';
+
+const originURL = dev ? env.ORIGIN_DEV : env.ORIGIN;
+const githubId = dev ? env.GITHUB_CLIENT_ID_DEV : env.GITHUB_CLIENT_ID;
+const githubSecret = dev ? env.GITHUB_CLIENT_SECRET_DEV : env.GITHUB_CLIENT_SECRET;
 
 export const auth = betterAuth({
-	baseURL: env.ORIGIN,
+	baseURL: originURL ?? '',
 	secret: env.BETTER_AUTH_SECRET,
 	database: drizzleAdapter(db, { provider: 'sqlite' }),
 	emailAndPassword: { enabled: true },
 	socialProviders: {
 		github: {
-			clientId: env.GITHUB_CLIENT_ID,
-			clientSecret: env.GITHUB_CLIENT_SECRET
+			clientId: githubId ?? '',
+			clientSecret: githubSecret ?? ''
 		}
 	},
 	plugins: [
