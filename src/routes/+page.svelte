@@ -18,18 +18,19 @@
 	};
 
 	async function onLoad() {
+		if (!terminal) return;
 		await document.fonts.ready;
 
 		const fitAddon = new FitAddon();
-		terminal?.loadAddon(fitAddon);
+		terminal.loadAddon(fitAddon);
 		fitAddon.fit();
 
 		const webLinksAddon = new WebLinksAddon();
-		terminal?.loadAddon(webLinksAddon);
+		terminal.loadAddon(webLinksAddon);
 
-		terminal?.writeln('Welcome to \x1B[1;3;34mSvelteKit Terminal\x1B[0m!');
-		terminal?.writeln('Ligature and icon test: => ');
-		terminal?.writeln('Link test: https://www.google.com/');
+		terminal.writeln('Welcome to \x1B[1;3;34mSvelteKit Terminal\x1B[0m!');
+		terminal.writeln('Ligature and icon test: => ');
+		terminal.writeln('Link test: https://www.google.com/');
 	}
 </script>
 
