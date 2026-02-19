@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { CATPPUCCIN_MOCHA } from '$lib/config/terminal';
 	import {
+		ANSI_COLOR_YELLOW,
+		ANSI_COLOR_GREEN,
+		ANSI_COLOR_RESET,
+		ANSI_COLOR_BLUE,
+		ANSI_COLOR_RED
+	} from '$lib/shell/Shell';
+	import {
 		Xterm,
 		type ITerminalOptions,
 		type ITerminalInitOnlyOptions,
@@ -8,6 +15,7 @@
 	} from '@battlefieldduck/xterm-svelte';
 	import { FitAddon } from '@xterm/addon-fit';
 	import { WebLinksAddon } from '@xterm/addon-web-links';
+	import { Shell } from '$lib/shell/Shell';
 
 	let terminal = $state<Terminal>();
 	let fitAddon: FitAddon;
@@ -29,9 +37,41 @@
 		const webLinksAddon = new WebLinksAddon();
 		terminal.loadAddon(webLinksAddon);
 
-		terminal.writeln('Welcome to \x1B[1;3;34mSvelteKit Terminal\x1B[0m!');
-		terminal.writeln('Ligature and icon test: => ');
-		terminal.writeln('Link test: https://www.google.com/');
+		// Display website banner
+		terminal.write(ANSI_COLOR_RED);
+		terminal.writeln('██████╗  █████╗ ██╗██████╗ ██╗   ██╗██████╗    ██╗   ██╗███████╗');
+		terminal.writeln('██╔══██╗██╔══██╗██║██╔══██╗╚██╗ ██╔╝██╔══██╗   ██║   ██║██╔════╝');
+		terminal.writeln('██████╔╝███████║██║██████╔╝ ╚████╔╝ ██████╔╝   ██║   ██║███████╗');
+		terminal.writeln('██╔══██╗██╔══██║██║██╔═══╝   ╚██╔╝  ██╔══██╗   ██║   ██║╚════██║');
+		terminal.writeln('██████╔╝██║  ██║██║██║        ██║   ██║  ██║██╗╚██████╔╝███████║');
+		terminal.writeln('╚═════╝ ╚═╝  ╚═╝╚═╝╚═╝        ╚═╝   ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚══════╝');
+		terminal.writeln(ANSI_COLOR_RESET);
+
+		// Display welcome message
+		terminal.writeln('Welcome to my terminal homepage!');
+		terminal.writeln(
+			`Type ${ANSI_COLOR_BLUE}"help"${ANSI_COLOR_RESET} to see available commands.\r\n`
+		);
+
+		// Initialize custom shell for xterm.js
+		const shell = new Shell(terminal);
+		shell.Initialize([
+			// {
+			// 	name: 'example',
+			// 	description: 'Example of a custom command',
+			// 	action: ({ terminal, args }) => {
+			// 		terminal.writeln(
+			// 			"Any custom command can easily access this shell's corresponding terminal."
+			// 		);
+			// 		terminal.writeln(
+			// 			'They can also accept any number of positional arguments, separated by spaces.'
+			// 		);
+			// 		terminal.writeln(
+			// 			`Custom command's arguments are: [${args.map((str) => `'${str}'`).join(', ')}]`
+			// 		);
+			// 	}
+			// }
+		]);
 	}
 </script>
 
