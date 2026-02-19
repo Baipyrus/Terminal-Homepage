@@ -10,6 +10,7 @@
 	import { WebLinksAddon } from '@xterm/addon-web-links';
 
 	let terminal = $state<Terminal>();
+	let fitAddon: FitAddon;
 
 	const options: ITerminalOptions & ITerminalInitOnlyOptions = {
 		fontFamily: '"CaskaydiaCove Nerd Font", monospace',
@@ -21,7 +22,7 @@
 		if (!terminal) return;
 		await document.fonts.ready;
 
-		const fitAddon = new FitAddon();
+		fitAddon = new FitAddon();
 		terminal.loadAddon(fitAddon);
 		fitAddon.fit();
 
@@ -34,4 +35,8 @@
 	}
 </script>
 
-<Xterm class="h-screen w-screen" bind:terminal {options} {onLoad} />
+<svelte:window onresize={() => fitAddon?.fit()} />
+
+<div class="h-screen w-screen" style:background-color={CATPPUCCIN_MOCHA.background}>
+	<Xterm class="h-full w-full" bind:terminal {options} {onLoad} />
+</div>
