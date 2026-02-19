@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { CATPPUCCIN_MOCHA } from '$lib/config/terminal';
-	import {
-		ANSI_COLOR_YELLOW,
-		ANSI_COLOR_GREEN,
-		ANSI_COLOR_RESET,
-		ANSI_COLOR_BLUE,
-		ANSI_COLOR_RED
-	} from '$lib/shell/Shell';
+	import { ANSI_COLOR_RESET, ANSI_COLOR_BLUE, ANSI_COLOR_RED, Shell } from '$lib/shell/Shell';
 	import {
 		Xterm,
 		type ITerminalOptions,
@@ -15,10 +9,9 @@
 	} from '@battlefieldduck/xterm-svelte';
 	import { FitAddon } from '@xterm/addon-fit';
 	import { WebLinksAddon } from '@xterm/addon-web-links';
-	import { Shell } from '$lib/shell/Shell';
 
 	let terminal = $state<Terminal>();
-	let fitAddon: FitAddon;
+	const fitAddon = new FitAddon();
 
 	const options: ITerminalOptions & ITerminalInitOnlyOptions = {
 		fontFamily: '"CaskaydiaCove Nerd Font", monospace',
@@ -30,7 +23,6 @@
 		if (!terminal) return;
 		await document.fonts.ready;
 
-		fitAddon = new FitAddon();
 		terminal.loadAddon(fitAddon);
 		fitAddon.fit();
 

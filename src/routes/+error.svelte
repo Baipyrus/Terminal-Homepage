@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { CATPPUCCIN_MOCHA } from '$lib/config/terminal';
 
-	let { data } = $props();
+	const { data } = $props();
 </script>
 
 <div
