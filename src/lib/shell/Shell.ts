@@ -19,6 +19,8 @@ export const ANSI_COLOR_RESET = '\x1b[0m';
 export const ANSI_COLOR_BLUE = '\x1b[34m';
 export const ANSI_COLOR_RED = '\x1b[31m';
 
+export type ShellProps = { commands?: ShellCommand[]; prompt?: string };
+
 export class Shell {
 	private _PROMPT: string;
 	private _TERMINAL: Terminal;
@@ -31,12 +33,40 @@ export class Shell {
 	constructor(terminal: Terminal) {
 		this._TERMINAL = terminal;
 		this._PROMPT = `${ANSI_COLOR_GREEN}root@${ANSI_COLOR_BLUE}baipyr.us ${ANSI_COLOR_YELLOW}$pwd${ANSI_COLOR_RESET}$ `;
+
+		// Register default commands
+		this.registerCommands(
+			{
+				name: 'help',
+				description: 'Display this help message',
+				action: ({ terminal }) => {
+					terminal.writeln('Available commands:');
+
+					this._COMMANDS.forEach((command, name) => {
+						terminal.writeln(`  ${name.padEnd(COMMAND_MAX_LENGTH)} - ${command.description}`);
+					});
+				}
+			},
+			{
+				name: 'clear',
+				description: 'Clear the terminal',
+				action: ({ terminal }) => terminal.clear()
+			}
+		);
 	}
 
-	public Initialize(commands: ShellCommand[] = [], prompt?: string) {
-		if (prompt) this._PROMPT = prompt;
+	public Initialize(props: ShellProps) {
+		if (props.prompt) this._PROMPT = props.prompt;
 
 		// Register custom commands for this shell instance, if any
+		if (props.commands?.length) this.registerCommands(...props.commands);
+
+		// Initialize terminal with shell prompt and input handler
+		this.displayPrompt();
+		this._TERMINAL.onData((data) => this.handleInput(data));
+	}
+
+	private registerCommands(...commands: ShellCommand[]) {
 		for (const command of commands) {
 			const cnl = command.name.length;
 			if (cnl <= COMMAND_MIN_LENGTH || cnl > COMMAND_MAX_LENGTH) {
@@ -48,10 +78,6 @@ export class Shell {
 
 			this._COMMANDS.set(command.name, command);
 		}
-
-		// Initialize terminal with shell prompt and input handler
-		this.displayPrompt();
-		this._TERMINAL.onData((data) => this.handleInput(data));
 	}
 
 	// Handle shell prompt preparation with custom variables
@@ -146,33 +172,12 @@ export class Shell {
 		const [cmd, ...args] = command.split(' ');
 		const registeredCommand = this._COMMANDS.get(cmd);
 
-		// Simple builtin command check
-		switch (cmd) {
-			case 'help':
-				this._TERMINAL.writeln('Available commands:');
-				this._TERMINAL.writeln('  help    - Display this help message');
-				this._TERMINAL.writeln('  clear   - Clear the terminal');
-
-				// Append available custom commands to help menu
-				this._COMMANDS.forEach((command, name) => {
-					this._TERMINAL.writeln(`  ${name.padEnd(COMMAND_MAX_LENGTH)} - ${command.description}`);
-				});
-
-				break;
-			case 'clear':
-				this._TERMINAL.clear();
-
-				break;
-			default:
-				// If a custom command was registered during initialization, execute it
-				if (registeredCommand) {
-					registeredCommand.action({ terminal: this._TERMINAL, args });
-					break;
-				}
-
-				// Otherwise, display CNF info:
-				this._TERMINAL.writeln(`Command not found: ${cmd}`);
-				break;
+		// Command not found error:
+		if (!registeredCommand) {
+			this._TERMINAL.writeln(`Command not found: ${cmd}`);
+			return;
 		}
+
+		registeredCommand.action({ terminal: this._TERMINAL, args });
 	}
 }
