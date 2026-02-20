@@ -1,5 +1,7 @@
 import type { Terminal } from '@battlefieldduck/xterm-svelte';
 import { COMMAND_MIN_LENGTH, COMMAND_MAX_LENGTH, type ShellCommand } from './Command';
+import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
 
 const CURRENT_LINE_TRIM_END = -1;
 const CURRENT_LINE_START = 0;
@@ -51,6 +53,22 @@ export class Shell {
 				name: 'clear',
 				description: 'Clear the terminal',
 				action: ({ terminal }) => terminal.clear()
+			},
+			{
+				name: 'login',
+				description: 'Login with GitHub',
+				action: async ({ terminal }) => {
+					terminal.writeln('Redirecting to login with GitHub...');
+					await goto(resolve('/login'));
+				}
+			},
+			{
+				name: 'logout',
+				description: 'Logout from session',
+				action: async ({ terminal }) => {
+					terminal.writeln('Logging out...');
+					await goto(resolve('/logout'));
+				}
 			}
 		);
 	}
