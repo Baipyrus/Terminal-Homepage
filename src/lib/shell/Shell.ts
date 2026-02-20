@@ -38,6 +38,25 @@ export class Shell {
 		this._PROMPT = `${ANSI_COLOR_GREEN}$user@${ANSI_COLOR_BLUE}baipyr.us ${ANSI_COLOR_YELLOW}$pwd${ANSI_COLOR_RESET}$ `;
 
 		// Register default commands
+		this.loadBuiltinCommands();
+	}
+
+	public Initialize(props: ShellProps) {
+		// Set username if login successful
+		if (props.username) this.username = props.username;
+
+		// Accept custom prompt, if specified
+		if (props.prompt) this._PROMPT = props.prompt;
+
+		// Register custom commands for this shell instance, if any
+		if (props.commands?.length) this.registerCommands(...props.commands);
+
+		// Initialize terminal with shell prompt and input handler
+		this.displayPrompt();
+		this._TERMINAL.onData((data) => this.handleInput(data));
+	}
+
+	private loadBuiltinCommands() {
 		this.registerCommands(
 			{
 				name: 'help',
@@ -72,21 +91,6 @@ export class Shell {
 				}
 			}
 		);
-	}
-
-	public Initialize(props: ShellProps) {
-		// Set username if login successful
-		if (props.username) this.username = props.username;
-
-		// Accept custom prompt, if specified
-		if (props.prompt) this._PROMPT = props.prompt;
-
-		// Register custom commands for this shell instance, if any
-		if (props.commands?.length) this.registerCommands(...props.commands);
-
-		// Initialize terminal with shell prompt and input handler
-		this.displayPrompt();
-		this._TERMINAL.onData((data) => this.handleInput(data));
 	}
 
 	private registerCommands(...commands: ShellCommand[]) {
