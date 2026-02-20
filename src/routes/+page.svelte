@@ -74,6 +74,8 @@
 			// 	}
 			// ]
 		});
+
+		terminal.focus();
 	}
 </script>
 
