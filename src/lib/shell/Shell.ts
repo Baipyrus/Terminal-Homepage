@@ -79,7 +79,7 @@ export class Shell {
 				description: 'Login with GitHub',
 				action: async ({ terminal }) => {
 					terminal.writeln('Redirecting to login with GitHub...');
-					await goto(resolve('/login'));
+					await goto(resolve('/api/login'));
 				}
 			},
 			{
@@ -87,7 +87,7 @@ export class Shell {
 				description: 'Logout from session',
 				action: async ({ terminal }) => {
 					terminal.writeln('Logging out...');
-					await goto(resolve('/logout'));
+					await goto(resolve('/api/logout'));
 				}
 			}
 		);
