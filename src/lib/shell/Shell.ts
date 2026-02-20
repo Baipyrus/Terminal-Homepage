@@ -2,6 +2,10 @@ import type { Terminal } from '@battlefieldduck/xterm-svelte';
 import { COMMAND_MIN_LENGTH, COMMAND_MAX_LENGTH, type ShellCommand } from './Command';
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
+import { normalize, dirsToPath } from './path';
+
+const EMPTY = 0;
+const SINGLE_ARGUMENT = 1;
 
 const CURRENT_LINE_TRIM_END = -1;
 const CURRENT_LINE_START = 0;
@@ -29,7 +33,7 @@ export class Shell {
 	private _COMMANDS: Map<string, ShellCommand> = new Map();
 
 	private currentLine: string = '';
-	private currentPath: string = '~';
+	private currentPath: string[] = ['~'];
 	private cursorPosition: number = 0;
 	private username: string = 'root';
 
@@ -89,6 +93,104 @@ export class Shell {
 					terminal.writeln('Logging out...');
 					await goto(resolve('/api/logout'));
 				}
+			},
+			{
+				name: 'ls',
+				description: 'List directories',
+				action: async ({ terminal, args }) => {
+					if (args.length > SINGLE_ARGUMENT) {
+						terminal.writeln('Error: Invalid number of arguments');
+						return;
+					}
+
+					const target = args[0] || dirsToPath(this.currentPath);
+					const absolutePath = dirsToPath(normalize(target, dirsToPath(this.currentPath)));
+
+					const response = await fetch(`/api/ls?path=${encodeURIComponent(absolutePath)}`);
+
+					// Since we get both error messages and directory data via JSON and
+					// do not check other outcomes of our request, we simply catch all
+					// unexpected behavior and print an error to the terminal.
+					try {
+						const data: string[] | { error: string } = await response.json();
+						if (!response.ok && !Array.isArray(data)) {
+							terminal.writeln(`ls: ${data.error}`);
+							return;
+						}
+
+						if (Array.isArray(data) && data.length > EMPTY) terminal.writeln(data.join('  '));
+					} catch {
+						terminal.writeln(`ls: Unexpected error during execution (Status: ${response.status})`);
+					}
+				}
+			},
+			{
+				name: 'mkdir',
+				description: 'Create a new directory',
+				action: async ({ terminal, args }) => {
+					if (args.length !== SINGLE_ARGUMENT) {
+						terminal.writeln('Error: Invalid number of arguments');
+						return;
+					}
+
+					const [target] = args;
+					const absolutePath = dirsToPath(normalize(target, dirsToPath(this.currentPath)));
+
+					const response = await fetch('/api/mkdir', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ path: absolutePath })
+					});
+
+					if (response.ok) return;
+
+					// As in the `ls` command, we expect an error message or any
+					// number of unaccounted errors or different response codes.
+					try {
+						const data: { error: string } = await response.json();
+						terminal.writeln(`mkdir: ${data.error}`);
+					} catch {
+						terminal.writeln(
+							`mkdir: Unexpected error during execution (Status: ${response.status})`
+						);
+					}
+				}
+			},
+			{
+				name: 'cd',
+				description: 'Change directory',
+				action: async ({ terminal, args }) => {
+					if (args.length > SINGLE_ARGUMENT) {
+						terminal.writeln('Error: Invalid number of arguments');
+						return;
+					}
+
+					const target = args[0] || '~';
+					const directories = normalize(target, dirsToPath(this.currentPath));
+					const absolutePath = dirsToPath(directories);
+
+					if (absolutePath === '~') {
+						this.currentPath = ['~'];
+						return;
+					}
+
+					// Check if directory exists via `ls` endpoint
+					const response = await fetch(`/api/ls?path=${encodeURIComponent(absolutePath)}`);
+
+					// Same error handling as in `ls` command
+					try {
+						const data: string[] | { error: string } = await response.json();
+						if (!response.ok && !Array.isArray(data)) {
+							terminal.writeln(`cd: ${data.error} (Path resolved as: '${absolutePath}')`);
+							return;
+						}
+					} catch {
+						terminal.writeln(`cd: Unexpected error during execution (Status: ${response.status})`);
+					}
+
+					// If everything succeeded according to plan, save path to current
+					this.currentPath = directories;
+				}
 			}
 		);
 	}
@@ -113,7 +215,7 @@ export class Shell {
 		let prompt = this._PROMPT.toLowerCase();
 
 		// Prepare prompt by replacing custom variables
-		prompt = prompt.replace('$pwd', this.currentPath);
+		prompt = prompt.replace('$pwd', dirsToPath(this.currentPath));
 		// Prepare prompt by replacing username from GitHub login
 		prompt = prompt.replace('$user', this.username);
 

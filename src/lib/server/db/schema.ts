@@ -10,4 +10,8 @@ export const task = sqliteTable('task', {
 	priority: integer('priority').notNull().default(DEFAULT_TASK_PRIORITY)
 });
 
+export const directory = sqliteTable('directory', {
+	path: text('path').primaryKey()
+});
+
 export * from './auth.schema';

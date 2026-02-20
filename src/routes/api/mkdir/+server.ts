@@ -1,0 +1,31 @@
+import { json } from '@sveltejs/kit';
+import { db } from '$lib/server/db';
+import { directory } from '$lib/server/db/schema';
+import type { RequestHandler } from './$types';
+import { exists } from '$lib/server/path';
+import { BAD_REQUEST } from '$lib/constants/http';
+
+const PATH_START = 0;
+const TOP_MOST_DIR = 1;
+const OMIT_CHILD_PATH = -1;
+
+export const POST: RequestHandler = async ({ request }) => {
+	const { path }: { path: string } = await request.json();
+
+	// Minimal user input checks
+	if (!path || !path.startsWith('~'))
+		return json({ error: 'Invalid path' }, { status: BAD_REQUEST });
+
+	// Check if parent directory of path exists (unless it's a top-level dir under ~)
+	const parts = path.split('/');
+	if (parts.length > TOP_MOST_DIR) {
+		const parentPath = parts.slice(PATH_START, OMIT_CHILD_PATH).join('/');
+
+		if (parentPath !== '~' && !exists(parentPath))
+			return json({ error: 'Parent directory does not exist' }, { status: BAD_REQUEST });
+	}
+
+	// Create directory entry in Database
+	await db.insert(directory).values({ path }).onConflictDoNothing();
+	return new Response();
+};
