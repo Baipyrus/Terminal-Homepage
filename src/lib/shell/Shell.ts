@@ -93,7 +93,7 @@ export class Shell {
 		this._TERMINAL.write(prompt);
 	}
 
-	private handleInput(data: string) {
+	private async handleInput(data: string) {
 		// Boolean check to prevent out-of-bounds operations when the cursor is at the start
 		const isAtStart = this.cursorPosition <= CURRENT_LINE_START;
 		// The portion of the current line before the character immediately preceding the cursor
@@ -111,7 +111,7 @@ export class Shell {
 			// ENTER
 			case '\r':
 				this._TERMINAL.write('\r\n');
-				this.executeCommand(this.currentLine.trim());
+				await this.executeCommand(this.currentLine.trim());
 				this.currentLine = '';
 				this.cursorPosition = CURRENT_LINE_START;
 				this.displayPrompt();
@@ -164,7 +164,7 @@ export class Shell {
 		}
 	}
 
-	private executeCommand(command: string) {
+	private async executeCommand(command: string) {
 		// No command was supplied
 		if (command === '') return;
 
@@ -178,6 +178,6 @@ export class Shell {
 			return;
 		}
 
-		registeredCommand.action({ terminal: this._TERMINAL, args });
+		await registeredCommand.action({ terminal: this._TERMINAL, args });
 	}
 }
