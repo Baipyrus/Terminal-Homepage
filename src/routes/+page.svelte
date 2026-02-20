@@ -75,7 +75,7 @@
 			// 		}
 			// 	}
 			// ],
-			username: data.user?.name
+			username: data.username
 		});
 
 		terminal.focus();
