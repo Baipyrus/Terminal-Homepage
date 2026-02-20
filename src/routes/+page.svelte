@@ -10,6 +10,8 @@
 	import { FitAddon } from '@xterm/addon-fit';
 	import { WebLinksAddon } from '@xterm/addon-web-links';
 
+	const { data } = $props();
+
 	let terminal = $state<Terminal>();
 	const fitAddon = new FitAddon();
 
@@ -72,7 +74,8 @@
 			// 			);
 			// 		}
 			// 	}
-			// ]
+			// ],
+			username: data.user?.name
 		});
 
 		terminal.focus();

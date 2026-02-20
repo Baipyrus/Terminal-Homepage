@@ -21,7 +21,7 @@ export const ANSI_COLOR_RESET = '\x1b[0m';
 export const ANSI_COLOR_BLUE = '\x1b[34m';
 export const ANSI_COLOR_RED = '\x1b[31m';
 
-export type ShellProps = { commands?: ShellCommand[]; prompt?: string };
+export type ShellProps = { commands?: ShellCommand[]; prompt?: string; username?: string };
 
 export class Shell {
 	private _PROMPT: string;
@@ -31,10 +31,11 @@ export class Shell {
 	private currentLine: string = '';
 	private currentPath: string = '~';
 	private cursorPosition: number = 0;
+	private username: string = 'root';
 
 	constructor(terminal: Terminal) {
 		this._TERMINAL = terminal;
-		this._PROMPT = `${ANSI_COLOR_GREEN}root@${ANSI_COLOR_BLUE}baipyr.us ${ANSI_COLOR_YELLOW}$pwd${ANSI_COLOR_RESET}$ `;
+		this._PROMPT = `${ANSI_COLOR_GREEN}$user@${ANSI_COLOR_BLUE}baipyr.us ${ANSI_COLOR_YELLOW}$pwd${ANSI_COLOR_RESET}$ `;
 
 		// Register default commands
 		this.registerCommands(
@@ -74,6 +75,10 @@ export class Shell {
 	}
 
 	public Initialize(props: ShellProps) {
+		// Set username if login successful
+		if (props.username) this.username = props.username;
+
+		// Accept custom prompt, if specified
 		if (props.prompt) this._PROMPT = props.prompt;
 
 		// Register custom commands for this shell instance, if any
@@ -105,8 +110,8 @@ export class Shell {
 
 		// Prepare prompt by replacing custom variables
 		prompt = prompt.replace('$pwd', this.currentPath);
-		// TODO: Implement username from GitHub login for messaging
-		// prompt = prompt.replace('$user', this.username);
+		// Prepare prompt by replacing username from GitHub login
+		prompt = prompt.replace('$user', this.username);
 
 		this._TERMINAL.write(prompt);
 	}
