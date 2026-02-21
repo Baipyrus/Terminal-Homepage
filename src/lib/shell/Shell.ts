@@ -77,7 +77,6 @@ export class Shell {
 		}
 
 		const channel = dirsToPath(this.currentPath);
-		console.debug(channel);
 		this._EVENTSOURCE = new EventSource(`/api/connect?channel=${encodeURIComponent(channel)}`);
 
 		this._EVENTSOURCE.onmessage = (event) => {
