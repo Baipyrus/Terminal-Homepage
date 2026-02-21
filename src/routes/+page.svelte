@@ -56,6 +56,12 @@
 
 		terminal.focus();
 	}
+
+	$effect(() => {
+		return () => {
+			if (shell) shell.tryDestroySSE(true);
+		};
+	});
 </script>
 
 <svelte:window onresize={() => fitAddon?.fit()} />

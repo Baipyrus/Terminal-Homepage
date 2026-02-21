@@ -69,12 +69,22 @@ export class Shell {
 		this._TERMINAL.onData((data) => this.handleInput(data));
 	}
 
+	public tryDestroySSE(notify?: boolean) {
+		// Ignore if not set
+		if (!this._EVENTSOURCE) return;
+
+		// Destroy if exists
+		this._EVENTSOURCE.close();
+		this._EVENTSOURCE = null;
+
+		// Optionally notify user in terminal
+		if (notify) this._TERMINAL.writeln('\r\nError: Readable stream disconnected from server');
+	}
+
 	// Connect `ReadableStream` for client to server if authenticated
 	private connectSSE() {
-		if (this._EVENTSOURCE) {
-			this._EVENTSOURCE.close();
-			this._EVENTSOURCE = null;
-		}
+		// Discard old event listener before switching channel
+		this.tryDestroySSE();
 
 		const channel = dirsToPath(this.currentPath);
 		this._EVENTSOURCE = new EventSource(`/api/connect?channel=${encodeURIComponent(channel)}`);
@@ -102,9 +112,7 @@ export class Shell {
 		// Generic error handling and disconnect
 		this._EVENTSOURCE.onerror = (error) => {
 			console.error('EventSource Error:', error);
-			this._TERMINAL.writeln('\r\nError: Readable stream disconnected from server');
-			this._EVENTSOURCE?.close();
-			this._EVENTSOURCE = null;
+			this.tryDestroySSE(true);
 		};
 	}
 
@@ -357,6 +365,7 @@ export class Shell {
 
 		if (absolutePath === '~') {
 			self.currentPath = ['~'];
+			self.connectSSE();
 			return;
 		}
 
