@@ -5,10 +5,10 @@ import type { RequestHandler } from './$types';
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) return json({ error: 'Unauthorized' }, { status: 401 });
 
-	const { message }: { message: string } = await request.json();
+	const { message, channel }: { message: string; channel: string } = await request.json();
 
-	if (message)
-		messenger.send({
+	if (message && channel)
+		messenger.send(channel, {
 			user: locals.user.name,
 			content: message
 		});

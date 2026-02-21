@@ -3,32 +3,34 @@ import type { RequestHandler } from './$types';
 
 const KEEP_ALIVE_MILLIS = 30000;
 
-export const GET: RequestHandler = ({ locals }) => {
+export const GET: RequestHandler = ({ locals, url }) => {
 	if (!locals.user) return new Response('Unauthorized', { status: 401 });
 
+	const channel = url.searchParams.get('channel') || '~';
 	let client: Client | null = null;
 	let keepAlive: ReturnType<typeof setInterval> | null = null;
+
 	const disconnect = () => {
 		if (keepAlive) clearInterval(keepAlive);
-		if (client) messenger.remove(client);
+		if (client) messenger.remove(channel, client);
 	};
 
 	const stream = new ReadableStream({
 		start(controller) {
-			// Create client instance with
+			// Create client instance
 			client = {
 				id: locals.user!.id,
 				send: (data: Message) => {
 					try {
 						controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
-						/* eslint-disable-next-line */
+						/* eslint-disable-next-line no-empty */
 					} catch {}
 				}
 			} as Client;
 
 			// Initialize connection
 			controller.enqueue(': connected\n\n');
-			messenger.add(client);
+			messenger.add(channel, client);
 
 			// Keep-alive interval for `ReadableStream`
 			keepAlive = setInterval(() => {

@@ -9,23 +9,47 @@ export type Message = {
 	content: string;
 };
 
-// Hub for client management and messaging system
+const EMPTY = 0;
+
+// Hub for client management and messaging system categorized by channels
 class Messenger {
-	private clients: Set<Client> = new Set();
+	private channels: Map<string, Set<Client>> = new Map();
 
-	add(client: Client) {
-		console.debug('New client connected!');
-		this.clients.add(client);
+	add(channel: string, client: Client) {
+		// If channel does not exist, create it
+		if (!this.channels.has(channel)) this.channels.set(channel, new Set());
+
+		// Add user to channel
+		this.channels.get(channel)!.add(client);
 	}
 
-	remove(client: Client) {
-		console.debug('Client has disconnected!');
-		this.clients.delete(client);
+	remove(channel: string, client: Client) {
+		// Try getting clients from channel
+		const clients = this.channels.get(channel);
+
+		// Ignore if channel does not exist
+		if (!clients) return;
+
+		// Remove client from list
+		clients.delete(client);
+
+		// Delete channel if empty
+		if (clients.size === EMPTY) this.channels.delete(channel);
 	}
 
-	send(message: Message) {
-		console.debug('Broadcast:', message);
-		for (const client of this.clients) client.send(message);
+	send(channel: string, message: Message) {
+		// Try getting clients from channel
+		const clients = this.channels.get(channel);
+
+		// Ignore if channel does not exist
+		if (!clients) return;
+
+		// Try sending message to all clients in channel
+		for (const client of clients)
+			try {
+				client.send(message);
+				/* eslint-disable-next-line no-empty */
+			} catch {}
 	}
 }
 

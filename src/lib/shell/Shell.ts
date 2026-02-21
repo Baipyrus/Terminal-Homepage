@@ -71,8 +71,14 @@ export class Shell {
 
 	// Connect `ReadableStream` for client to server if authenticated
 	private connectSSE() {
-		if (this._EVENTSOURCE) return;
-		this._EVENTSOURCE = new EventSource('/api/connect');
+		if (this._EVENTSOURCE) {
+			this._EVENTSOURCE.close();
+			this._EVENTSOURCE = null;
+		}
+
+		const channel = dirsToPath(this.currentPath);
+		console.debug(channel);
+		this._EVENTSOURCE = new EventSource(`/api/connect?channel=${encodeURIComponent(channel)}`);
 
 		this._EVENTSOURCE.onmessage = (event) => {
 			const message = JSON.parse(event.data);
@@ -140,22 +146,22 @@ export class Shell {
 			{
 				name: 'ls',
 				description: 'List directories',
-				action: this.cmd_ls
+				action: (props) => this.cmd_ls(this, props)
 			},
 			{
 				name: 'mkdir',
 				description: 'Create a new directory',
-				action: this.cmd_mkdir
+				action: (props) => this.cmd_mkdir(this, props)
 			},
 			{
 				name: 'cd',
 				description: 'Change directory',
-				action: this.cmd_cd
+				action: (props) => this.cmd_cd(this, props)
 			},
 			{
 				name: 'echo',
 				description: 'Write arguments to the terminal',
-				action: this.cmd_echo
+				action: (props) => this.cmd_echo(this, props)
 			}
 		);
 	}
@@ -280,14 +286,14 @@ export class Shell {
 	// This method is used as the `ShellCommandAction` for the builtin `ls` command.
 	// This ESLint rule is disabled because `cmd_` is only a prefix in this case.
 	/* eslint-disable-next-line camelcase */
-	private async cmd_ls({ terminal, args }: ShellCommandProps) {
+	private async cmd_ls(self: Shell, { terminal, args }: ShellCommandProps) {
 		if (args.length > SINGLE_ARGUMENT) {
 			terminal.writeln('Error: Invalid number of arguments');
 			return;
 		}
 
-		const target = args[0] || dirsToPath(this.currentPath);
-		const absolutePath = dirsToPath(normalize(target, dirsToPath(this.currentPath)));
+		const target = args[0] || dirsToPath(self.currentPath);
+		const absolutePath = dirsToPath(normalize(target, dirsToPath(self.currentPath)));
 
 		const response = await fetch(`/api/ls?path=${encodeURIComponent(absolutePath)}`);
 
@@ -310,14 +316,14 @@ export class Shell {
 	// This method is used as the `ShellCommandAction` for the builtin `mkdir` command.
 	// This ESLint rule is disabled because `cmd_` is only a prefix in this case.
 	/* eslint-disable-next-line camelcase */
-	private async cmd_mkdir({ terminal, args }: ShellCommandProps) {
+	private async cmd_mkdir(self: Shell, { terminal, args }: ShellCommandProps) {
 		if (args.length !== SINGLE_ARGUMENT) {
 			terminal.writeln('Error: Invalid number of arguments');
 			return;
 		}
 
 		const [target] = args;
-		const absolutePath = dirsToPath(normalize(target, dirsToPath(this.currentPath)));
+		const absolutePath = dirsToPath(normalize(target, dirsToPath(self.currentPath)));
 
 		const response = await fetch('/api/mkdir', {
 			method: 'POST',
@@ -340,18 +346,18 @@ export class Shell {
 	// This method is used as the `ShellCommandAction` for the builtin `cd` command.
 	// This ESLint rule is disabled because `cmd_` is only a prefix in this case.
 	/* eslint-disable-next-line camelcase */
-	private async cmd_cd({ terminal, args }: ShellCommandProps) {
+	private async cmd_cd(self: Shell, { terminal, args }: ShellCommandProps) {
 		if (args.length > SINGLE_ARGUMENT) {
 			terminal.writeln('Error: Invalid number of arguments');
 			return;
 		}
 
 		const target = args[0] || '~';
-		const directories = normalize(target, dirsToPath(this.currentPath));
+		const directories = normalize(target, dirsToPath(self.currentPath));
 		const absolutePath = dirsToPath(directories);
 
 		if (absolutePath === '~') {
-			this.currentPath = ['~'];
+			self.currentPath = ['~'];
 			return;
 		}
 
@@ -367,22 +373,30 @@ export class Shell {
 			}
 		} catch {
 			terminal.writeln(`cd: Unexpected error during execution (Status: ${response.status})`);
+			return;
 		}
 
 		// If everything succeeded according to plan, save path to current
-		this.currentPath = directories;
+		// Note that we disable the ESLint rule here because `cd` is the only
+		// command that should ever be allowed to change the current path (directory)
+		/* eslint-disable-next-line require-atomic-updates */
+		self.currentPath = directories;
+		self.connectSSE();
 	}
 
 	// This method is used as the `ShellCommandAction` for the builtin `echo` command.
 	// This ESLint rule is disabled because `cmd_` is only a prefix in this case.
 	/* eslint-disable-next-line camelcase */
-	private async cmd_echo({ terminal, args }: ShellCommandProps) {
+	private async cmd_echo(self: Shell, { terminal, args }: ShellCommandProps) {
 		if (args.length < SINGLE_ARGUMENT) return;
 
 		const response = await fetch('/api/echo', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ message: args.join(' ') })
+			body: JSON.stringify({
+				message: args.join(' '),
+				channel: dirsToPath(self.currentPath)
+			})
 		});
 
 		if (response.ok) return;
