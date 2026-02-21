@@ -12,6 +12,7 @@
 
 	const { data } = $props();
 
+	let shell: Shell | null = null;
 	let terminal = $state<Terminal>();
 	const fitAddon = new FitAddon();
 
@@ -48,7 +49,7 @@
 		);
 
 		// Initialize custom shell for xterm.js
-		const shell = new Shell(terminal);
+		shell = new Shell(terminal);
 		shell.Initialize({
 			// // To add a custom prompt for the shell, you can set something like the following.
 			// // It will set a white text starting with the username that is currently logged in
