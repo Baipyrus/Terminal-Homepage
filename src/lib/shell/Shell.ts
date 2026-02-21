@@ -1,5 +1,10 @@
 import type { Terminal } from '@battlefieldduck/xterm-svelte';
-import { COMMAND_MIN_LENGTH, COMMAND_MAX_LENGTH, type ShellCommand } from './Command';
+import {
+	COMMAND_MIN_LENGTH,
+	COMMAND_MAX_LENGTH,
+	type ShellCommand,
+	type ShellCommandProps
+} from './Command';
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
 import { normalize, dirsToPath } from './path';
@@ -97,100 +102,17 @@ export class Shell {
 			{
 				name: 'ls',
 				description: 'List directories',
-				action: async ({ terminal, args }) => {
-					if (args.length > SINGLE_ARGUMENT) {
-						terminal.writeln('Error: Invalid number of arguments');
-						return;
-					}
-
-					const target = args[0] || dirsToPath(this.currentPath);
-					const absolutePath = dirsToPath(normalize(target, dirsToPath(this.currentPath)));
-
-					const response = await fetch(`/api/ls?path=${encodeURIComponent(absolutePath)}`);
-
-					// Since we get both error messages and directory data via JSON and
-					// do not check other outcomes of our request, we simply catch all
-					// unexpected behavior and print an error to the terminal.
-					try {
-						const data: string[] | { error: string } = await response.json();
-						if (!response.ok && !Array.isArray(data)) {
-							terminal.writeln(`ls: ${data.error}`);
-							return;
-						}
-
-						if (Array.isArray(data) && data.length > EMPTY) terminal.writeln(data.join('  '));
-					} catch {
-						terminal.writeln(`ls: Unexpected error during execution (Status: ${response.status})`);
-					}
-				}
+				action: this.cmd_ls
 			},
 			{
 				name: 'mkdir',
 				description: 'Create a new directory',
-				action: async ({ terminal, args }) => {
-					if (args.length !== SINGLE_ARGUMENT) {
-						terminal.writeln('Error: Invalid number of arguments');
-						return;
-					}
-
-					const [target] = args;
-					const absolutePath = dirsToPath(normalize(target, dirsToPath(this.currentPath)));
-
-					const response = await fetch('/api/mkdir', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ path: absolutePath })
-					});
-
-					if (response.ok) return;
-
-					// As in the `ls` command, we expect an error message or any
-					// number of unaccounted errors or different response codes.
-					try {
-						const data: { error: string } = await response.json();
-						terminal.writeln(`mkdir: ${data.error}`);
-					} catch {
-						terminal.writeln(
-							`mkdir: Unexpected error during execution (Status: ${response.status})`
-						);
-					}
-				}
+				action: this.cmd_mkdir
 			},
 			{
 				name: 'cd',
 				description: 'Change directory',
-				action: async ({ terminal, args }) => {
-					if (args.length > SINGLE_ARGUMENT) {
-						terminal.writeln('Error: Invalid number of arguments');
-						return;
-					}
-
-					const target = args[0] || '~';
-					const directories = normalize(target, dirsToPath(this.currentPath));
-					const absolutePath = dirsToPath(directories);
-
-					if (absolutePath === '~') {
-						this.currentPath = ['~'];
-						return;
-					}
-
-					// Check if directory exists via `ls` endpoint
-					const response = await fetch(`/api/ls?path=${encodeURIComponent(absolutePath)}`);
-
-					// Same error handling as in `ls` command
-					try {
-						const data: string[] | { error: string } = await response.json();
-						if (!response.ok && !Array.isArray(data)) {
-							terminal.writeln(`cd: ${data.error} (Path resolved as: '${absolutePath}')`);
-							return;
-						}
-					} catch {
-						terminal.writeln(`cd: Unexpected error during execution (Status: ${response.status})`);
-					}
-
-					// If everything succeeded according to plan, save path to current
-					this.currentPath = directories;
-				}
+				action: this.cmd_cd
 			}
 		);
 	}
@@ -308,5 +230,101 @@ export class Shell {
 		}
 
 		await registeredCommand.action({ terminal: this._TERMINAL, args });
+	}
+
+	// This method is used as the `ShellCommandAction` for the builtin `ls` command.
+	// This ESLint rule is disabled because `cmd_` is only a prefix in this case.
+	/* eslint-disable-next-line camelcase */
+	private async cmd_ls({ terminal, args }: ShellCommandProps) {
+		if (args.length > SINGLE_ARGUMENT) {
+			terminal.writeln('Error: Invalid number of arguments');
+			return;
+		}
+
+		const target = args[0] || dirsToPath(this.currentPath);
+		const absolutePath = dirsToPath(normalize(target, dirsToPath(this.currentPath)));
+
+		const response = await fetch(`/api/ls?path=${encodeURIComponent(absolutePath)}`);
+
+		// Since we get both error messages and directory data via JSON and
+		// do not check other outcomes of our request, we simply catch all
+		// unexpected behavior and print an error to the terminal.
+		try {
+			const data: string[] | { error: string } = await response.json();
+			if (!response.ok && !Array.isArray(data)) {
+				terminal.writeln(`ls: ${data.error}`);
+				return;
+			}
+
+			if (Array.isArray(data) && data.length > EMPTY) terminal.writeln(data.join('  '));
+		} catch {
+			terminal.writeln(`ls: Unexpected error during execution (Status: ${response.status})`);
+		}
+	}
+
+	// This method is used as the `ShellCommandAction` for the builtin `mkdir` command.
+	// This ESLint rule is disabled because `cmd_` is only a prefix in this case.
+	/* eslint-disable-next-line camelcase */
+	private async cmd_mkdir({ terminal, args }: ShellCommandProps) {
+		if (args.length !== SINGLE_ARGUMENT) {
+			terminal.writeln('Error: Invalid number of arguments');
+			return;
+		}
+
+		const [target] = args;
+		const absolutePath = dirsToPath(normalize(target, dirsToPath(this.currentPath)));
+
+		const response = await fetch('/api/mkdir', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ path: absolutePath })
+		});
+
+		if (response.ok) return;
+
+		// As in the `ls` command, we expect an error message or any
+		// number of unaccounted errors or different response codes.
+		try {
+			const data: { error: string } = await response.json();
+			terminal.writeln(`mkdir: ${data.error}`);
+		} catch {
+			terminal.writeln(`mkdir: Unexpected error during execution (Status: ${response.status})`);
+		}
+	}
+
+	// This method is used as the `ShellCommandAction` for the builtin `cd` command.
+	// This ESLint rule is disabled because `cmd_` is only a prefix in this case.
+	/* eslint-disable-next-line camelcase */
+	private async cmd_cd({ terminal, args }: ShellCommandProps) {
+		if (args.length > SINGLE_ARGUMENT) {
+			terminal.writeln('Error: Invalid number of arguments');
+			return;
+		}
+
+		const target = args[0] || '~';
+		const directories = normalize(target, dirsToPath(this.currentPath));
+		const absolutePath = dirsToPath(directories);
+
+		if (absolutePath === '~') {
+			this.currentPath = ['~'];
+			return;
+		}
+
+		// Check if directory exists via `ls` endpoint
+		const response = await fetch(`/api/ls?path=${encodeURIComponent(absolutePath)}`);
+
+		// Same error handling as in `ls` command
+		try {
+			const data: string[] | { error: string } = await response.json();
+			if (!response.ok && !Array.isArray(data)) {
+				terminal.writeln(`cd: ${data.error} (Path resolved as: '${absolutePath}')`);
+				return;
+			}
+		} catch {
+			terminal.writeln(`cd: Unexpected error during execution (Status: ${response.status})`);
+		}
+
+		// If everything succeeded according to plan, save path to current
+		this.currentPath = directories;
 	}
 }
