@@ -36,6 +36,7 @@ export class Shell {
 	private _PROMPT: string;
 	private _TERMINAL: Terminal;
 	private _COMMANDS: Map<string, ShellCommand> = new Map();
+	private _EVENTSOURCE: EventSource | null = null;
 
 	private currentLine: string = '';
 	private currentPath: string[] = ['~'];
@@ -52,7 +53,10 @@ export class Shell {
 
 	public Initialize(props: ShellProps) {
 		// Set username if login successful
-		if (props.username) this.username = props.username;
+		if (props.username) {
+			this.username = props.username;
+			this.connectSSE();
+		}
 
 		// Accept custom prompt, if specified
 		if (props.prompt) this._PROMPT = props.prompt;
@@ -63,6 +67,40 @@ export class Shell {
 		// Initialize terminal with shell prompt and input handler
 		this.displayPrompt();
 		this._TERMINAL.onData((data) => this.handleInput(data));
+	}
+
+	// Connect `ReadableStream` for client to server if authenticated
+	private connectSSE() {
+		if (this._EVENTSOURCE) return;
+		this._EVENTSOURCE = new EventSource('/api/connect');
+
+		this._EVENTSOURCE.onmessage = (event) => {
+			const message = JSON.parse(event.data);
+			if (!message.user || !message.content) return;
+
+			// Move to the beginning of the line and clear everything the user sees (prompt + input)
+			this._TERMINAL.write(`${ANSI_SAVE_CURSOR}\r${ANSI_CLEAR_LINE_AFTER}`);
+
+			// Print the broadcasted message
+			this._TERMINAL.writeln(
+				`${ANSI_COLOR_YELLOW}[${message.user}]:${ANSI_COLOR_RESET} ${message.content}`
+			);
+
+			// Redraw the prompt and restore whatever the user was typing
+			this.displayPrompt();
+			this._TERMINAL.write(this.currentLine);
+
+			// If the cursor was not at the end of the line, move it back to the correct position
+			this._TERMINAL.write(`${ANSI_RESTORE_CURSOR}\n`);
+		};
+
+		// Generic error handling and disconnect
+		this._EVENTSOURCE.onerror = (error) => {
+			console.error('EventSource Error:', error);
+			this._TERMINAL.writeln('\r\nError: Readable stream disconnected from server');
+			this._EVENTSOURCE?.close();
+			this._EVENTSOURCE = null;
+		};
 	}
 
 	private loadBuiltinCommands() {
@@ -113,6 +151,11 @@ export class Shell {
 				name: 'cd',
 				description: 'Change directory',
 				action: this.cmd_cd
+			},
+			{
+				name: 'echo',
+				description: 'Write arguments to the terminal',
+				action: this.cmd_echo
 			}
 		);
 	}
@@ -157,14 +200,16 @@ export class Shell {
 		const pivotCharacter = isAtStart
 			? ''
 			: this.currentLine[this.cursorPosition + CURRENT_LINE_TRIM_END];
+		// The user input as formed inside of the `currentLine`
+		const userInput = this.currentLine.trim();
 
 		switch (data) {
 			// ENTER
 			case '\r':
 				this._TERMINAL.write('\r\n');
-				await this.executeCommand(this.currentLine.trim());
 				this.currentLine = '';
 				this.cursorPosition = CURRENT_LINE_START;
+				await this.executeCommand(userInput);
 				this.displayPrompt();
 
 				break;
@@ -326,5 +371,29 @@ export class Shell {
 
 		// If everything succeeded according to plan, save path to current
 		this.currentPath = directories;
+	}
+
+	// This method is used as the `ShellCommandAction` for the builtin `echo` command.
+	// This ESLint rule is disabled because `cmd_` is only a prefix in this case.
+	/* eslint-disable-next-line camelcase */
+	private async cmd_echo({ terminal, args }: ShellCommandProps) {
+		if (args.length < SINGLE_ARGUMENT) return;
+
+		const response = await fetch('/api/echo', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ message: args.join(' ') })
+		});
+
+		if (response.ok) return;
+
+		// As in the `ls` command, we expect an error message or any
+		// number of unaccounted errors or different response codes.
+		try {
+			const data: { error: string } = await response.json();
+			terminal.writeln(`mkdir: ${data.error}`);
+		} catch {
+			terminal.writeln(`mkdir: Unexpected error during execution (Status: ${response.status})`);
+		}
 	}
 }
