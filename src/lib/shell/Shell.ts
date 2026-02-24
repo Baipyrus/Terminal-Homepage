@@ -344,6 +344,7 @@ export class Shell {
 		// number of unaccounted errors or different response codes.
 		try {
 			const data: { error: string } = await response.json();
+			if (!data.error) throw new Error('Panic');
 			terminal.writeln(`mkdir: ${data.error}`);
 		} catch {
 			terminal.writeln(`mkdir: Unexpected error during execution (Status: ${response.status})`);
@@ -375,7 +376,7 @@ export class Shell {
 		// Same error handling as in `ls` command
 		try {
 			const data: string[] | { error: string } = await response.json();
-			if (!response.ok && !Array.isArray(data)) {
+			if (!response.ok && !Array.isArray(data) && data.error) {
 				terminal.writeln(`cd: ${data.error} (Path resolved as: '${absolutePath}')`);
 				return;
 			}
@@ -413,6 +414,7 @@ export class Shell {
 		// number of unaccounted errors or different response codes.
 		try {
 			const data: { error: string } = await response.json();
+			if (!data.error) throw new Error('Panic');
 			terminal.writeln(`echo: ${data.error}`);
 		} catch {
 			terminal.writeln(`echo: Unexpected error during execution (Status: ${response.status})`);
