@@ -12,6 +12,7 @@ RUN npm ci
 
 # Build the project using the node adapter
 COPY . .
+RUN npm run postinstall
 RUN npm run build
 
 # Initialize database with drizzle
