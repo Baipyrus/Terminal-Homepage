@@ -3,8 +3,8 @@ services:
   rp:
     image: nginx:1.29.1
     ports:
-      - "8080:80"
-      - "8443:443"
+      - '8080:80'
+      - '8443:443'
     volumes:
       - ./nginx:/etc/nginx:Z
     depends_on:
