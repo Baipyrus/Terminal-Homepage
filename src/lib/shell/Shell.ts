@@ -413,9 +413,9 @@ export class Shell {
 		// number of unaccounted errors or different response codes.
 		try {
 			const data: { error: string } = await response.json();
-			terminal.writeln(`mkdir: ${data.error}`);
+			terminal.writeln(`echo: ${data.error}`);
 		} catch {
-			terminal.writeln(`mkdir: Unexpected error during execution (Status: ${response.status})`);
+			terminal.writeln(`echo: Unexpected error during execution (Status: ${response.status})`);
 		}
 	}
 }
