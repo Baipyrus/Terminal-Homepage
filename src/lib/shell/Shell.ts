@@ -182,7 +182,7 @@ export class Shell {
 			},
 			{
 				name: 'echo',
-				description: 'Write arguments to the terminal',
+				description: 'Send messsage in directory',
 				action: (props) => this.cmd_echo(this, props)
 			}
 		);
