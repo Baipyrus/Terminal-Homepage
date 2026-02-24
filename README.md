@@ -83,6 +83,17 @@ To deploy or run the application in a production-ready state:
    npm run prod
    ```
 
+### Alternative: Docker Compose
+
+Alternatively, you can run the entire stack (including an Nginx reverse proxy) using
+Docker Compose:
+
+```bash
+# Optionally rebuild:
+# docker compose build
+docker compose up
+```
+
 > [!NOTE]
 > The `npm run preview` command is not intended to support GitHub authentication,
 > as the application logic specifically targets environment variables for either
