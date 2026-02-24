@@ -8,7 +8,9 @@ import { BAD_REQUEST } from '$lib/constants/http';
 
 const OFFSET_INDEX = 1;
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, locals }) => {
+	if (!locals.user) return json({ error: 'Unauthorized' }, { status: 401 });
+
 	const parent = url.searchParams.get('path') || '~';
 
 	// Ensure the parent itself exists (if it's not root '~')

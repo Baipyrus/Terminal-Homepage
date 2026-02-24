@@ -9,7 +9,9 @@ const PATH_START = 0;
 const TOP_MOST_DIR = 1;
 const OMIT_CHILD_PATH = -1;
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
+	if (!locals.user) return json({ error: 'Unauthorized' }, { status: 401 });
+
 	const { path }: { path: string } = await request.json();
 
 	// Minimal user input checks
