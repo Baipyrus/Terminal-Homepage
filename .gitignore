@@ -163,3 +163,10 @@ GEMINI.md
 CLAUDE.md
 .claudeignore
 CODEX.md
+
+# Nginx configs
+nginx/dhparam
+nginx/*.pem
+nginx/*.crt
+nginx/*.key
+nginx/logs/
