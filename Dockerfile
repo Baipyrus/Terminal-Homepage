@@ -7,6 +7,9 @@ WORKDIR /app
 COPY package.json ./
 COPY package-lock.json ./
 
+# Install xz-utils for font extraction
+RUN apt-get update && apt-get install -y xz-utils && rm -rf /var/lib/apt/lists/*
+
 # Reinstalls all dependencies cleanly
 RUN npm ci
 
