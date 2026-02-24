@@ -1,0 +1,11 @@
+services:
+  th:
+    build:
+      context: .
+    volumes:
+      - db:/app/data:Z
+    restart: unless-stopped
+
+volumes:
+  db:
+    driver: local
