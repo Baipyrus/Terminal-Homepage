@@ -27,6 +27,7 @@
 		"auth:schema": "npx @better-auth/cli generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes"
 	},
 	"devDependencies": {
+		"@battlefieldduck/xterm-svelte": "^2.2.1",
 		"@eslint/compat": "^2.0.2",
 		"@eslint/js": "^9.39.2",
 		"@sveltejs/adapter-node": "^5.5.2",
@@ -36,6 +37,8 @@
 		"@types/better-sqlite3": "^7.6.13",
 		"@types/node": "^22",
 		"@xterm/addon-fit": "^0.11.0",
+		"@xterm/addon-web-links": "^0.12.0",
+		"@xterm/xterm": "^6.0.0",
 		"better-auth": "^1.4.18",
 		"drizzle-kit": "^0.31.8",
 		"drizzle-orm": "^0.45.1",
@@ -55,9 +58,6 @@
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
-		"@battlefieldduck/xterm-svelte": "^2.2.1",
-		"@xterm/addon-web-links": "^0.12.0",
-		"@xterm/xterm": "^6.0.0",
 		"better-sqlite3": "^12.6.2"
 	}
 }
