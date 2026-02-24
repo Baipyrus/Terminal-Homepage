@@ -119,6 +119,21 @@ export class Shell {
 	private loadBuiltinCommands() {
 		this.registerCommands(
 			{
+				name: 'about',
+				description: 'About this page',
+				action: ({ terminal }) => {
+					terminal.writeln("Hi! I'm Baipyrus and I am the owner and developer of this homepage.");
+					terminal.writeln('I have written this web app using the SvelteKit framework and some');
+					terminal.writeln('other handy tools to make the development process a bit easier.');
+					terminal.writeln('Feel free to check out the code yourself! To get started on here,');
+					terminal.writeln("first type 'help'!\n");
+					terminal.writeln('Lastly, here are some helpful links to learn more about me:');
+					terminal.writeln('https://github.com/Baipyrus');
+					terminal.writeln('https://git.baipyr.us/Terminal-Homepage');
+					terminal.writeln('https://github.com/Baipyrus/Terminal-Homepage');
+				}
+			},
+			{
 				name: 'help',
 				description: 'Display this help message',
 				action: ({ terminal }) => {
