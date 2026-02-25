@@ -9,8 +9,9 @@
 	} from '@battlefieldduck/xterm-svelte';
 	import { FitAddon } from '@xterm/addon-fit';
 	import { WebLinksAddon } from '@xterm/addon-web-links';
+	import type { PageProps } from './$types';
 
-	const { data } = $props();
+	const { data }: PageProps = $props();
 
 	let shell: Shell | null = null;
 	let terminal = $state<Terminal>();

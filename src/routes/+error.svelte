@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { CATPPUCCIN_MOCHA } from '$lib/config/terminal';
+	import type { PageProps } from './$types';
 
-	const { data } = $props();
+	const { data }: PageProps = $props();
 </script>
 
 <div
