@@ -4,8 +4,8 @@ FROM node:22.17-slim AS builder
 # Stores the project files in /app
 WORKDIR /app
 
-COPY package.json ./
-COPY package-lock.json ./
+COPY ./package.json ./
+COPY ./package-lock.json ./
 
 # Install xz-utils for font extraction
 RUN apt-get update && apt-get install -y xz-utils && rm -rf /var/lib/apt/lists/*
@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y xz-utils && rm -rf /var/lib/apt/lists/*
 RUN npm ci
 
 # Build the project using the node adapter
-COPY . .
+COPY ./ ./
 RUN npm run postinstall
 RUN npm run build
 
@@ -32,12 +32,12 @@ WORKDIR /app
 
 # Copies production build to the image
 COPY --from=builder --chown=node:node /app/build ./build/
-COPY --from=builder --chown=node:node /app/data ./data
+COPY --from=builder --chown=node:node /app/data ./data/
 
 # Copy runtime dependencies
-COPY --chown=node:node package.json ./
-COPY --chown=node:node .env ./
 COPY --chown=node:node ./scripts/rotate-logs.js ./scripts/
+COPY --chown=node:node ./package.json ./
+COPY --chown=node:node ./.env ./
 
 # Translate relative path to absolute in container
 RUN sed -i 's/\(DATABASE_URL=\)/\1\/app\//' ./.env
