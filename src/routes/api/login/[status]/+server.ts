@@ -1,10 +1,10 @@
 import { FOUND, NOT_FOUND, UNAUTHORIZED } from '$lib/constants/http';
 import logger from '$lib/server/logger';
-import { redirect, type RequestHandler } from '@sveltejs/kit';
+import { error, redirect, type RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = ({ locals, params }) => {
 	// Technically, this is a bad request, but we return 404
-	if (!Object.hasOwn(params, 'status')) return new Response('Not Found', { status: NOT_FOUND });
+	if (!Object.hasOwn(params, 'status')) error(NOT_FOUND, 'Not Found');
 
 	if (params.status === 'error') {
 		logger.error('A user has failed to log in', { label: 'Auth' });
@@ -18,5 +18,5 @@ export const GET: RequestHandler = ({ locals, params }) => {
 	}
 
 	// Any other edge cases should be unauthorized to access this endpoint
-	return new Response('Unauthorized', { status: UNAUTHORIZED });
+	error(UNAUTHORIZED, 'Unauthorized');
 };

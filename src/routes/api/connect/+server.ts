@@ -1,12 +1,13 @@
 import { NOT_FOUND, UNAUTHORIZED } from '$lib/constants/http';
 import { messenger, type Client, type Message } from '$lib/server/Messenger';
 import { exists } from '$lib/server/path';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 const KEEP_ALIVE_MILLIS = 30000;
 
 export const GET: RequestHandler = ({ locals, url }) => {
-	if (!locals.user) return new Response('Unauthorized', { status: UNAUTHORIZED });
+	if (!locals.user) return error(UNAUTHORIZED, 'Unauthorized');
 
 	const channel = url.searchParams.get('channel') || '~';
 
