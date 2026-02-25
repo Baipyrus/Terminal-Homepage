@@ -37,6 +37,7 @@ COPY --from=builder --chown=node:node /app/data ./data
 # Copy runtime dependencies
 COPY --chown=node:node package.json ./
 COPY --chown=node:node .env ./
+COPY --chown=node:node ./scripts/rotate-logs.js ./scripts/
 
 # Translate relative path to absolute in container
 RUN sed -i 's/\(DATABASE_URL=\)/\1\/app\//' ./.env

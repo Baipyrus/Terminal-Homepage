@@ -16,8 +16,11 @@ services:
       context: .
     volumes:
       - db:/app/data:Z
+      - logs:/app/logs:Z
     restart: unless-stopped
 
 volumes:
   db:
+    driver: local
+  logs:
     driver: local
