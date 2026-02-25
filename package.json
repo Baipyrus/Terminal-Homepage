@@ -58,6 +58,7 @@
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
-		"better-sqlite3": "^12.6.2"
+		"better-sqlite3": "^12.6.2",
+		"winston": "^3.19.0"
 	}
 }
