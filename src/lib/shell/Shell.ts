@@ -5,7 +5,6 @@ import {
 	type ShellCommand,
 	type ShellCommandProps
 } from './Command';
-import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
 import { normalize, dirsToPath } from './path';
 
@@ -152,17 +151,17 @@ export class Shell {
 			{
 				name: 'login',
 				description: 'Login with GitHub',
-				action: async ({ terminal }) => {
+				action: ({ terminal }) => {
 					terminal.writeln('Redirecting to login with GitHub...');
-					await goto(resolve('/api/login'));
+					location.href = resolve('/api/login');
 				}
 			},
 			{
 				name: 'logout',
 				description: 'Logout from session',
-				action: async ({ terminal }) => {
+				action: ({ terminal }) => {
 					terminal.writeln('Logging out...');
-					await goto(resolve('/api/logout'));
+					location.href = resolve('/api/logout');
 				}
 			},
 			{
