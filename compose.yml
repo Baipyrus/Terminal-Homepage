@@ -15,8 +15,8 @@ services:
     build:
       context: .
     volumes:
-      - db:/app/data
-      - logs:/app/logs
+      - db:/app/data:Z,U
+      - logs:/app/logs:Z,U
     restart: unless-stopped
 
 volumes:
