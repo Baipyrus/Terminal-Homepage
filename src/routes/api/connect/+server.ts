@@ -1,3 +1,4 @@
+import { NOT_FOUND, UNAUTHORIZED } from '$lib/constants/http';
 import { messenger, type Client, type Message } from '$lib/server/Messenger';
 import { exists } from '$lib/server/path';
 import type { RequestHandler } from './$types';
@@ -5,12 +6,12 @@ import type { RequestHandler } from './$types';
 const KEEP_ALIVE_MILLIS = 30000;
 
 export const GET: RequestHandler = ({ locals, url }) => {
-	if (!locals.user) return new Response('Unauthorized', { status: 401 });
+	if (!locals.user) return new Response('Unauthorized', { status: UNAUTHORIZED });
 
 	const channel = url.searchParams.get('channel') || '~';
 
 	// Validate that the directory (channel) exists in the database
-	if (channel !== '~' && !exists(channel)) return new Response('Not Found', { status: 404 });
+	if (channel !== '~' && !exists(channel)) return new Response('Not Found', { status: NOT_FOUND });
 
 	let client: Client | null = null;
 	let keepAlive: ReturnType<typeof setInterval> | null = null;

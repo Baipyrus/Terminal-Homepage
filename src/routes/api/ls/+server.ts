@@ -4,12 +4,12 @@ import { directory } from '$lib/server/db/schema';
 import { eq, like, and, not } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 import { exists } from '$lib/server/path';
-import { BAD_REQUEST } from '$lib/constants/http';
+import { BAD_REQUEST, UNAUTHORIZED } from '$lib/constants/http';
 
 const OFFSET_INDEX = 1;
 
 export const GET: RequestHandler = async ({ url, locals }) => {
-	if (!locals.user) return json({ error: 'Unauthorized' }, { status: 401 });
+	if (!locals.user) return json({ error: 'Unauthorized' }, { status: UNAUTHORIZED });
 
 	const parent = url.searchParams.get('path') || '~';
 

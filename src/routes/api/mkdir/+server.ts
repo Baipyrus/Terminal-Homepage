@@ -4,14 +4,15 @@ import { messenger } from '$lib/server/Messenger';
 import { directory } from '$lib/server/db/schema';
 import type { RequestHandler } from './$types';
 import { exists } from '$lib/server/path';
-import { BAD_REQUEST } from '$lib/constants/http';
+import { BAD_REQUEST, UNAUTHORIZED } from '$lib/constants/http';
+import logger from '$lib/server/logger';
 
 const PATH_START = 0;
 const TOP_MOST_DIR = 1;
 const OMIT_CHILD_PATH = -1;
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	if (!locals.user) return json({ error: 'Unauthorized' }, { status: 401 });
+	if (!locals.user) return json({ error: 'Unauthorized' }, { status: UNAUTHORIZED });
 
 	const { path }: { path: string } = await request.json();
 
@@ -35,6 +36,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		user: locals.user.name,
 		content: `created a new subdirectory: ${path}`
 	});
+
+	logger.info(`User '${locals.user.name}' created directory: ${path}`, { label: 'MKDIR' });
 
 	return new Response();
 };
