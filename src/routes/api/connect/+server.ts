@@ -37,6 +37,12 @@ export const GET: RequestHandler = ({ locals, url }) => {
 			controller.enqueue(': connected\n\n');
 			messenger.add(channel, client);
 
+			// Broadcast entry message
+			messenger.send(channel, {
+				user: locals.user!.name,
+				content: 'entered the channel'
+			});
+
 			// Keep-alive interval for `ReadableStream`
 			keepAlive = setInterval(() => {
 				try {
