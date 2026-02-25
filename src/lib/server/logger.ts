@@ -1,3 +1,4 @@
+import { dev } from '$app/environment';
 import { createLogger, format, transports, config } from 'winston';
 
 // Extract winston members to be used below
@@ -59,7 +60,7 @@ const logger = createLogger({
 });
 
 // *Additional* console logging for development mode
-if (process.env.NODE_ENV !== 'production') {
+if (dev) {
 	logger.add(
 		new transports.Console({
 			format: combine(colorize(), timestamp(), customFormat)
