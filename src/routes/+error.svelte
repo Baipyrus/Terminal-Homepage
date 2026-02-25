@@ -11,7 +11,7 @@
 	style:background-color={CATPPUCCIN_MOCHA.background}
 >
 	<p class="text-lg font-bold" style:color={CATPPUCCIN_MOCHA.red}>
-		[{page.status}] {data.httpMethod}
+		[{page.status}] {data?.httpMethod ?? ''}
 		{page.url.pathname}
 	</p>
 </div>

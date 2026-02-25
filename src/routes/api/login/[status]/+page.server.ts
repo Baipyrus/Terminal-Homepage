@@ -1,8 +1,9 @@
 import { FOUND, NOT_FOUND, UNAUTHORIZED } from '$lib/constants/http';
 import logger from '$lib/server/logger';
-import { error, redirect, type RequestHandler } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
-export const GET: RequestHandler = ({ locals, params }) => {
+export const load: PageServerLoad = ({ locals, params }) => {
 	// Technically, this is a bad request, but we return 404
 	if (!Object.hasOwn(params, 'status')) error(NOT_FOUND, 'Not Found');
 

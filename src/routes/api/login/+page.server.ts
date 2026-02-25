@@ -1,8 +1,9 @@
-import { error, redirect, type RequestHandler } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { auth } from '$lib/server/auth';
 import { FOUND, BAD_REQUEST } from '$lib/constants/http';
+import type { PageServerLoad } from './$types';
 
-export const GET: RequestHandler = async () => {
+export const load: PageServerLoad = async () => {
 	const result = await auth.api.signInSocial({
 		body: {
 			provider: 'github',
@@ -18,5 +19,5 @@ export const GET: RequestHandler = async () => {
 	if (result.url) return redirect(FOUND, result.url);
 
 	// Notify frontend of failed social sign-in
-	return error(BAD_REQUEST, { message: 'Social sign-in failed' });
+	error(BAD_REQUEST, { message: 'Social sign-in failed' });
 };
