@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ locals, request }) => {
 		headers: request.headers
 	});
 
-	logger.info(`User ${locals.user} logged out successfully`, { label: 'Auth' });
+	logger.info(`User ${locals.user.name} logged out successfully`, { label: 'Auth' });
 
 	redirect(FOUND, '/');
 };
