@@ -37,6 +37,14 @@ class Messenger {
 		if (clients.size === EMPTY) this.channels.delete(channel);
 	}
 
+	count(channel: string): number {
+		// Try getting clients from channel
+		const clients = this.channels.get(channel);
+
+		// Return size or 0
+		return clients?.size || EMPTY;
+	}
+
 	send(channel: string, message: Message) {
 		// Try getting clients from channel
 		const clients = this.channels.get(channel);

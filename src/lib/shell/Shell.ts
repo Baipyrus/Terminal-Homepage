@@ -175,6 +175,11 @@ export class Shell {
 				action: (props) => this.cmd_mkdir(this, props)
 			},
 			{
+				name: 'rmdir',
+				description: 'Remove an empty directory',
+				action: (props) => this.cmd_rmdir(this, props)
+			},
+			{
 				name: 'cd',
 				description: 'Change directory',
 				action: (props) => this.cmd_cd(this, props)
@@ -362,6 +367,37 @@ export class Shell {
 			terminal.writeln(`mkdir: ${data.error}`);
 		} catch {
 			terminal.writeln(`mkdir: Unexpected error during execution (Status: ${response.status})`);
+		}
+	}
+
+	// This method is used as the `ShellCommandAction` for the builtin `rmdir` command.
+	// This ESLint rule is disabled because `cmd_` is only a prefix in this case.
+	/* eslint-disable-next-line camelcase */
+	private async cmd_rmdir(self: Shell, { terminal, args }: ShellCommandProps) {
+		if (args.length !== SINGLE_ARGUMENT) {
+			terminal.writeln('Error: Invalid number of arguments');
+			return;
+		}
+
+		const [target] = args;
+		const absolutePath = dirsToPath(normalize(target, dirsToPath(self.currentPath)));
+
+		const response = await fetch('/api/rmdir', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ path: absolutePath })
+		});
+
+		if (response.ok) return;
+
+		// As in the `ls` command, we expect an error message or any
+		// number of unaccounted errors or different response codes.
+		try {
+			const data: { error: string } = await response.json();
+			if (!data.error) throw new Error('Panic');
+			terminal.writeln(`rmdir: ${data.error}`);
+		} catch {
+			terminal.writeln(`rmdir: Unexpected error during execution (Status: ${response.status})`);
 		}
 	}
 
