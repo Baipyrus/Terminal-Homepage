@@ -48,4 +48,4 @@ RUN sed -i 's/\(DATABASE_URL=\)/\1\/app\//' ./.env
 EXPOSE 3000
 
 # Starts the node server
-CMD ["bash", "-c", "npm run prod"]
+CMD ["npm", "run", "prod"]
