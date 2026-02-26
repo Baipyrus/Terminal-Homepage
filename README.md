@@ -86,7 +86,8 @@ To deploy or run the application in a production-ready state:
 ### Alternative: Docker Compose
 
 Alternatively, you can run the entire stack (including an Nginx reverse proxy) using
-Docker Compose:
+Docker Compose. Also note that the Webserver is running as the dedicated `node` user,
+so file operations on the `logs/` and `data/` directories need to be permitted:
 
 ```bash
 # Optionally rebuild:
