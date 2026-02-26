@@ -1,7 +1,7 @@
 services:
   # Nginx Reverse Proxy
   rp:
-    image: nginx:1.29.1
+    image: nginx:1.29.5
     ports:
       - '8080:80'
       - '8443:443'
