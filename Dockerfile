@@ -1,14 +1,11 @@
 # Uses the latest LTS release of NodeJS
-FROM node:22.17-slim AS builder
+FROM node:25.7 AS builder
 
 # Stores the project files in /app
 WORKDIR /app
 
 COPY ./package.json ./
 COPY ./package-lock.json ./
-
-# Install xz-utils for font extraction
-RUN apt-get update && apt-get install -y xz-utils && rm -rf /var/lib/apt/lists/*
 
 # Reinstalls all dependencies cleanly
 RUN npm ci
@@ -22,7 +19,7 @@ RUN npm run build
 RUN rm -f ./data/local.db
 RUN npm run db:push -- --force
 
-FROM node:22.17-slim
+FROM node:25.7
 
 # Sets the production runtime user
 USER node:node
