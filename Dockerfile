@@ -1,5 +1,5 @@
 # Uses the latest LTS release of NodeJS
-FROM node:25.7 AS builder
+FROM node:25.8 AS builder
 
 # Stores the project files in /app
 WORKDIR /app
@@ -19,7 +19,7 @@ RUN npm run build
 RUN rm -f ./data/local.db
 RUN npm run db:push -- --force
 
-FROM node:25.7
+FROM node:25.8
 
 # Sets the production runtime user
 USER node:node
