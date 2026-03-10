@@ -29,7 +29,7 @@
 	},
 	"devDependencies": {
 		"@battlefieldduck/xterm-svelte": "^2.2.1",
-		"@eslint/compat": "^2.0.2",
+		"@eslint/compat": "^2.0.3",
 		"@eslint/js": "^10.0.1",
 		"@sveltejs/adapter-node": "^5.5.4",
 		"@sveltejs/kit": "^2.53.4",
