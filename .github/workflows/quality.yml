@@ -1,0 +1,36 @@
+name: Quality Control
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: ['main']
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          sed -i "s/\(BETTER_AUTH_SECRET=\"\)/\1$(uuidgen)/" ./.env
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run check
+        run: npm run check
