@@ -11,9 +11,9 @@ updates:
       interval: 'weekly'
     groups:
       dev-deps:
-        dependency-type: "development"
+        dependency-type: 'development'
       prod-deps:
-        dependency-type: "production"
+        dependency-type: 'production'
 
   - package-ecosystem: 'docker'
     directory: '/'
@@ -22,7 +22,7 @@ updates:
     groups:
       prod-deps:
         patterns:
-          - "*"
+          - '*'
 
   - package-ecosystem: 'docker-compose'
     directory: '/'
@@ -31,7 +31,7 @@ updates:
     groups:
       prod-deps:
         patterns:
-          - "*"
+          - '*'
 
   - package-ecosystem: 'github-actions'
     directory: '/'
@@ -40,4 +40,4 @@ updates:
     groups:
       dev-deps:
         patterns:
-          - "*"
+          - '*'
