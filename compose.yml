@@ -1,3 +1,10 @@
+# NOTE: All `:Z,U` flags on bind-mounted volumes
+#       can be safely removed on systems running
+#       docker-compose. These flags are used for
+#       podman-compose systems to update access
+#       permissions for the filesystem. See:
+#       https://docs.podman.io/en/v4.4/markdown/options/volume.html
+
 services:
   # Nginx Reverse Proxy
   rp:
@@ -15,12 +22,6 @@ services:
     build:
       context: .
     volumes:
-      - db:/app/data:Z,U
-      - logs:/app/logs:Z,U
+      - ./data:/app/data:Z
+      - ./logs:/app/logs:Z
     restart: unless-stopped
-
-volumes:
-  db:
-    driver: local
-  logs:
-    driver: local
