@@ -1,4 +1,4 @@
-import { messenger } from '$lib/server/messenger';
+import { messenger, Message } from '$lib/server/messenger';
 import { exists } from '$lib/server/path';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
@@ -14,13 +14,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (channel !== '~' && !exists(channel))
 			return json({ error: 'Channel does not exist' }, { status: NOT_FOUND });
 
-		messenger.sendAs(
-			{
-				user: locals.user,
-				content: message
-			},
-			channel
-		);
+		messenger.sendAs(new Message(locals.user, message), channel);
 	}
 
 	return new Response();

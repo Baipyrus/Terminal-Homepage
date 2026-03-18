@@ -1,4 +1,4 @@
-import type { Client, Message } from '.';
+import { type Client, type Message } from '.';
 
 const EMPTY = 0;
 
@@ -48,7 +48,7 @@ class Messenger {
 			if (c.user.id === message.user.id) continue;
 
 			try {
-				c.send(message);
+				c.send(message.toSlim());
 				/* eslint-disable-next-line no-empty */
 			} catch {}
 		}

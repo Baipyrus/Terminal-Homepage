@@ -1,5 +1,5 @@
 import { NOT_FOUND, UNAUTHORIZED } from '$lib/constants/http';
-import { messenger, type Client, type Message } from '$lib/server/messenger';
+import { messenger, Message, type Client, type SlimMessage } from '$lib/server/messenger';
 import { exists } from '$lib/server/path';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
@@ -27,7 +27,7 @@ export const GET: RequestHandler = ({ locals, url }) => {
 			// Create client instance
 			client = {
 				user: locals.user!,
-				send: (data: Message) => {
+				send: (data: SlimMessage) => {
 					try {
 						controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
 						/* eslint-disable-next-line no-empty */
@@ -40,13 +40,7 @@ export const GET: RequestHandler = ({ locals, url }) => {
 			messenger.addTo(client, channel);
 
 			// Broadcast entry message
-			messenger.sendAs(
-				{
-					user: locals.user!,
-					content: 'entered the channel'
-				},
-				channel
-			);
+			messenger.sendAs(new Message(locals.user!, 'entered the channel'), channel);
 
 			// Keep-alive interval for `ReadableStream`
 			keepAlive = setInterval(() => {

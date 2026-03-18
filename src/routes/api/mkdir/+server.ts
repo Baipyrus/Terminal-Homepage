@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { messenger } from '$lib/server/messenger';
+import { messenger, Message } from '$lib/server/messenger';
 import { directory } from '$lib/server/db/schema';
 import type { RequestHandler } from './$types';
 import { exists } from '$lib/server/path';
@@ -32,13 +32,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	await db.insert(directory).values({ path }).onConflictDoNothing();
 
 	// Broadcast channel creation message
-	messenger.sendAs(
-		{
-			user: locals.user,
-			content: `created a new subdirectory: ${path}`
-		},
-		parent
-	);
+	messenger.sendAs(new Message(locals.user, `created a new subdirectory: ${path}`), parent);
 
 	logger.info(`User '${locals.user.name}' created directory: ${path}`, { label: 'MKDIR' });
 

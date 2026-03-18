@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { messenger } from '$lib/server/messenger';
+import { messenger, Message } from '$lib/server/messenger';
 import { directory } from '$lib/server/db/schema';
 import type { RequestHandler } from './$types';
 import { exists } from '$lib/server/path';
@@ -46,13 +46,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	// Broadcast channel deletion message to parent
 	const parent = path.split('/').slice(PATH_START, OMIT_CHILD_PATH).join('/');
-	messenger.sendAs(
-		{
-			user: locals.user,
-			content: `removed subdirectory: ${path}`
-		},
-		parent
-	);
+	messenger.sendAs(new Message(locals.user, `removed subdirectory: ${path}`), parent);
 
 	logger.info(`User '${locals.user.name}' removed directory: ${path}`, { label: 'RMDIR' });
 
