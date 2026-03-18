@@ -19,14 +19,14 @@ export const GET: RequestHandler = ({ locals, url }) => {
 
 	const disconnect = () => {
 		if (keepAlive) clearInterval(keepAlive);
-		if (client) messenger.remove(channel, client);
+		if (client) messenger.removeFrom(client, channel);
 	};
 
 	const stream = new ReadableStream({
 		start(controller) {
 			// Create client instance
 			client = {
-				id: locals.user!.id,
+				user: locals.user!,
 				send: (data: Message) => {
 					try {
 						controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
@@ -37,13 +37,16 @@ export const GET: RequestHandler = ({ locals, url }) => {
 
 			// Initialize connection
 			controller.enqueue(': connected\n\n');
-			messenger.add(channel, client);
+			messenger.addTo(client, channel);
 
 			// Broadcast entry message
-			messenger.send(channel, {
-				user: locals.user!.name,
-				content: 'entered the channel'
-			});
+			messenger.sendAs(
+				{
+					user: locals.user!,
+					content: 'entered the channel'
+				},
+				channel
+			);
 
 			// Keep-alive interval for `ReadableStream`
 			keepAlive = setInterval(() => {

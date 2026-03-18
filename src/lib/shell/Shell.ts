@@ -448,17 +448,21 @@ export class Shell {
 	/* eslint-disable-next-line camelcase */
 	private async cmd_echo(self: Shell, { terminal, args }: ShellCommandProps) {
 		if (args.length < SINGLE_ARGUMENT) return;
+		const message = args.join(' ');
 
 		const response = await fetch('/api/echo', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
-				message: args.join(' '),
+				message: message,
 				channel: dirsToPath(self.currentPath)
 			})
 		});
 
-		if (response.ok) return;
+		if (response.ok) {
+			terminal.writeln(`${ANSI_COLOR_YELLOW}[${self.username}]:${ANSI_COLOR_RESET} ${message}`);
+			return;
+		}
 
 		// As in the `ls` command, we expect an error message or any
 		// number of unaccounted errors or different response codes.

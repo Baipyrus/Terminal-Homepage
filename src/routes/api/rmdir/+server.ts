@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: 'Directory may contain subdirectories' }, { status: FORBIDDEN });
 
 	// Check if any users are connected to it
-	if (messenger.count(path) > EMPTY)
+	if (messenger.countClients(path) > EMPTY)
 		return json({ error: 'Users may not be connected to directory' }, { status: FORBIDDEN });
 
 	// Delete directory entry from Database
@@ -46,10 +46,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	// Broadcast channel deletion message to parent
 	const parent = path.split('/').slice(PATH_START, OMIT_CHILD_PATH).join('/');
-	messenger.send(parent, {
-		user: locals.user.name,
-		content: `removed subdirectory: ${path}`
-	});
+	messenger.sendAs(
+		{
+			user: locals.user,
+			content: `removed subdirectory: ${path}`
+		},
+		parent
+	);
 
 	logger.info(`User '${locals.user.name}' removed directory: ${path}`, { label: 'RMDIR' });
 

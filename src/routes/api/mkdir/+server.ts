@@ -32,10 +32,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	await db.insert(directory).values({ path }).onConflictDoNothing();
 
 	// Broadcast channel creation message
-	messenger.send(parent, {
-		user: locals.user.name,
-		content: `created a new subdirectory: ${path}`
-	});
+	messenger.sendAs(
+		{
+			user: locals.user,
+			content: `created a new subdirectory: ${path}`
+		},
+		parent
+	);
 
 	logger.info(`User '${locals.user.name}' created directory: ${path}`, { label: 'MKDIR' });
 

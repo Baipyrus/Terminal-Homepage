@@ -1,11 +1,13 @@
+import type { User } from 'better-auth';
+
 // Representation of a single client connected via `ReadableStream`
 export type Client = {
-	id: string;
+	user: User;
 	send: (data: Message) => void;
 };
 
 export type Message = {
-	user: string;
+	user: User;
 	content: string;
 };
 
@@ -15,7 +17,7 @@ const EMPTY = 0;
 class Messenger {
 	private channels: Map<string, Set<Client>> = new Map();
 
-	add(channel: string, client: Client) {
+	addTo(client: Client, channel: string) {
 		// If channel does not exist, create it
 		if (!this.channels.has(channel)) this.channels.set(channel, new Set());
 
@@ -23,7 +25,7 @@ class Messenger {
 		this.channels.get(channel)!.add(client);
 	}
 
-	remove(channel: string, client: Client) {
+	removeFrom(client: Client, channel: string) {
 		// Try getting clients from channel
 		const clients = this.channels.get(channel);
 
@@ -37,7 +39,7 @@ class Messenger {
 		if (clients.size === EMPTY) this.channels.delete(channel);
 	}
 
-	count(channel: string): number {
+	countClients(channel: string): number {
 		// Try getting clients from channel
 		const clients = this.channels.get(channel);
 
@@ -45,7 +47,7 @@ class Messenger {
 		return clients?.size || EMPTY;
 	}
 
-	send(channel: string, message: Message) {
+	sendAs(message: Message, channel: string) {
 		// Try getting clients from channel
 		const clients = this.channels.get(channel);
 
@@ -53,11 +55,14 @@ class Messenger {
 		if (!clients) return;
 
 		// Try sending message to all clients in channel
-		for (const client of clients)
+		for (const c of clients) {
+			if (c.user.id === message.user.id) continue;
+
 			try {
-				client.send(message);
+				c.send(message);
 				/* eslint-disable-next-line no-empty */
 			} catch {}
+		}
 	}
 }
 

@@ -14,10 +14,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (channel !== '~' && !exists(channel))
 			return json({ error: 'Channel does not exist' }, { status: NOT_FOUND });
 
-		messenger.send(channel, {
-			user: locals.user.name,
-			content: message
-		});
+		messenger.sendAs(
+			{
+				user: locals.user,
+				content: message
+			},
+			channel
+		);
 	}
 
 	return new Response();
