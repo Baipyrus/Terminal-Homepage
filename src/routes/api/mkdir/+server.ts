@@ -5,7 +5,7 @@ import { directory } from '$lib/server/db/schema';
 import type { RequestHandler } from './$types';
 import { exists } from '$lib/server/path';
 import { BAD_REQUEST, UNAUTHORIZED } from '$lib/constants/http';
-import logger from '$lib/server/logger';
+import logger from '$lib/server/Logger';
 
 const PATH_START = 0;
 const TOP_MOST_DIR = 1;

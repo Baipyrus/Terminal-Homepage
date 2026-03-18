@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import { auth } from '$lib/server/auth';
 import { FOUND, UNAUTHORIZED } from '$lib/constants/http';
-import logger from '$lib/server/logger';
+import logger from '$lib/server/Logger';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, request }) => {

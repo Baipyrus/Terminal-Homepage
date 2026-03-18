@@ -5,7 +5,7 @@ import { directory } from '$lib/server/db/schema';
 import type { RequestHandler } from './$types';
 import { exists } from '$lib/server/path';
 import { BAD_REQUEST, UNAUTHORIZED, NOT_FOUND, FORBIDDEN } from '$lib/constants/http';
-import logger from '$lib/server/logger';
+import logger from '$lib/server/Logger';
 import { eq, like } from 'drizzle-orm';
 
 const ANY = 1;
