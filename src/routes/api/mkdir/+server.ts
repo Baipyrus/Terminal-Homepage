@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { messenger } from '$lib/server/Messenger';
+import { messenger } from '$lib/server/messenger';
 import { directory } from '$lib/server/db/schema';
 import type { RequestHandler } from './$types';
 import { exists } from '$lib/server/path';

@@ -1,5 +1,5 @@
 import { NOT_FOUND, UNAUTHORIZED } from '$lib/constants/http';
-import { messenger, type Client, type Message } from '$lib/server/Messenger';
+import { messenger, type Client, type Message } from '$lib/server/messenger';
 import { exists } from '$lib/server/path';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';

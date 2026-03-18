@@ -1,15 +1,4 @@
-import type { User } from 'better-auth';
-
-// Representation of a single client connected via `ReadableStream`
-export type Client = {
-	user: User;
-	send: (data: Message) => void;
-};
-
-export type Message = {
-	user: User;
-	content: string;
-};
+import type { Client, Message } from '.';
 
 const EMPTY = 0;
 

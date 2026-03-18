@@ -1,4 +1,4 @@
-import { messenger } from '$lib/server/Messenger';
+import { messenger } from '$lib/server/messenger';
 import { exists } from '$lib/server/path';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
