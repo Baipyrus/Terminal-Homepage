@@ -3,6 +3,7 @@ import { messenger, Message, type Client, type SlimMessage } from '$lib/server/m
 import { exists } from '$lib/server/path';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import logger from '$lib/server/Logger';
 
 const KEEP_ALIVE_MILLIS = 30000;
 
@@ -56,6 +57,8 @@ export const GET: RequestHandler = ({ locals, url }) => {
 		},
 		cancel: disconnect
 	});
+
+	logger.error(`Connecting user ${locals.user.name}`, { label: 'MSG' });
 
 	return new Response(stream, {
 		headers: {
