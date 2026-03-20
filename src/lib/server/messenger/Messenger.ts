@@ -1,4 +1,4 @@
-import { type Client, type Message } from '.';
+import type { Client, Message } from '.';
 
 const EMPTY = 0;
 
