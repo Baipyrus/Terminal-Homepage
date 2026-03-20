@@ -2,6 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { auth } from '$lib/server/auth';
 import { FOUND, BAD_REQUEST } from '$lib/constants/http';
 import type { PageServerLoad } from './$types';
+import { logger } from 'better-auth';
 
 export const load: PageServerLoad = async () => {
 	const result = await auth.api.signInSocial({
@@ -17,6 +18,8 @@ export const load: PageServerLoad = async () => {
 
 	// Redirect to generated social sign in URL from better-auth
 	if (result.url) return redirect(FOUND, result.url);
+
+	logger.error('Unexpected error during social sign-in', { label: 'AUTH' });
 
 	// Notify frontend of failed social sign-in
 	error(BAD_REQUEST, { message: 'Social sign-in failed' });
