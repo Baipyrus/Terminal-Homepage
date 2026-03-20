@@ -2,7 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { auth } from '$lib/server/auth';
 import { FOUND, BAD_REQUEST } from '$lib/constants/http';
 import type { PageServerLoad } from './$types';
-import { logger } from 'better-auth';
+import logger from '$lib/server/Logger';
 
 export const load: PageServerLoad = async () => {
 	const result = await auth.api.signInSocial({
