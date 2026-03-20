@@ -7,13 +7,13 @@ export const load: PageServerLoad = ({ locals, params }) => {
 	if (!Object.hasOwn(params, 'status')) error(BAD_REQUEST, 'Bad Request');
 
 	if (params.status === 'error') {
-		logger.error('A user has failed to log in', { label: 'Auth' });
+		logger.error('A user has failed to log in', { label: 'AUTH' });
 		return redirect(FOUND, '/');
 	}
 
 	const { user } = locals;
 	if (params.status === 'success' && user) {
-		logger.info(`User ${user.name} has successfully logged in`, { label: 'Auth' });
+		logger.info(`User ${user.name} has successfully logged in`, { label: 'AUTH' });
 		return redirect(FOUND, '/');
 	}
 
