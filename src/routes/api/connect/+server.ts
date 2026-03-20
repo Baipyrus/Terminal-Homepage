@@ -1,26 +1,25 @@
-import { NOT_FOUND, UNAUTHORIZED } from '$lib/constants/http';
-import { messenger, Message, type Client, type SlimMessage } from '$lib/server/messenger';
-import { exists } from '$lib/server/path';
+import { CONFLICT, UNAUTHORIZED } from '$lib/constants/http';
+import { messenger, type Client, type SlimMessage } from '$lib/server/messenger';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import logger from '$lib/server/Logger';
 
 const KEEP_ALIVE_MILLIS = 30000;
 
-export const GET: RequestHandler = ({ locals, url }) => {
+export const GET: RequestHandler = ({ locals }) => {
 	if (!locals.user) return error(UNAUTHORIZED, 'Unauthorized');
 
-	const channel = url.searchParams.get('channel') || '~';
+	// Deny request if user already connected elsewhere
+	if (messenger.hasClient(locals.user.id)) return error(CONFLICT, 'Already Connected');
 
-	// Validate that the directory (channel) exists in the database
-	if (channel !== '~' && !exists(channel)) return new Response('Not Found', { status: NOT_FOUND });
-
+	// Define connection variables
 	let client: Client | null = null;
 	let keepAlive: ReturnType<typeof setInterval> | null = null;
 
+	// Define disconnect function for readable stream
 	const disconnect = () => {
 		if (keepAlive) clearInterval(keepAlive);
-		if (client) messenger.removeFrom(client, channel);
+		if (client) messenger.tryRemove(client);
 	};
 
 	const stream = new ReadableStream({
@@ -38,10 +37,6 @@ export const GET: RequestHandler = ({ locals, url }) => {
 
 			// Initialize connection
 			controller.enqueue(': connected\n\n');
-			messenger.addTo(client, channel);
-
-			// Broadcast entry message
-			messenger.sendAs(new Message(locals.user!, 'entered the channel'), channel);
 
 			// Keep-alive interval for `ReadableStream`
 			keepAlive = setInterval(() => {
@@ -58,13 +53,17 @@ export const GET: RequestHandler = ({ locals, url }) => {
 		cancel: disconnect
 	});
 
-	logger.error(`Connecting user ${locals.user.name}`, { label: 'MSG' });
-
-	return new Response(stream, {
+	const response = new Response(stream, {
 		headers: {
 			'Content-Type': 'text/event-stream',
 			'Cache-Control': 'no-cache',
 			Connection: 'keep-alive'
 		}
 	});
+
+	// Connecting user to messenging service
+	messenger.tryAdd(client!, stream);
+	logger.info(`User ${locals.user!.name} connected readable stream`, { label: 'MSG' });
+
+	return response;
 };

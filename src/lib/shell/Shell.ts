@@ -77,7 +77,25 @@ export class Shell {
 		this._EVENTSOURCE = null;
 
 		// Optionally notify user in terminal
-		if (notify) this._TERMINAL.writeln('\r\nError: Readable stream disconnected from server');
+		if (!notify) return;
+
+		// Interrupt user input, write error message to terminal instead
+		this.interruptMessage('Error: Readable stream disconnected from server');
+	}
+
+	private interruptMessage(message: string) {
+		// Move to the beginning of the line and clear everything the user sees (prompt + input)
+		this._TERMINAL.write(`${ANSI_SAVE_CURSOR}\r${ANSI_CLEAR_LINE_AFTER}`);
+
+		// Print the broadcasted message
+		this._TERMINAL.writeln(message);
+
+		// Redraw the prompt and restore whatever the user was typing
+		this.displayPrompt();
+		this._TERMINAL.write(this.currentLine);
+
+		// If the cursor was not at the end of the line, move it back to the correct position
+		this._TERMINAL.write(`${ANSI_RESTORE_CURSOR}\n`);
 	}
 
 	// Connect `ReadableStream` for client to server if authenticated
@@ -92,20 +110,10 @@ export class Shell {
 			const message = JSON.parse(event.data);
 			if (!message.user || !message.content) return;
 
-			// Move to the beginning of the line and clear everything the user sees (prompt + input)
-			this._TERMINAL.write(`${ANSI_SAVE_CURSOR}\r${ANSI_CLEAR_LINE_AFTER}`);
-
-			// Print the broadcasted message
-			this._TERMINAL.writeln(
+			// Interrupt user input, write received message to terminal instead
+			this.interruptMessage(
 				`${ANSI_COLOR_YELLOW}[${message.user}]:${ANSI_COLOR_RESET} ${message.content}`
 			);
-
-			// Redraw the prompt and restore whatever the user was typing
-			this.displayPrompt();
-			this._TERMINAL.write(this.currentLine);
-
-			// If the cursor was not at the end of the line, move it back to the correct position
-			this._TERMINAL.write(`${ANSI_RESTORE_CURSOR}\n`);
 		};
 
 		// Generic error handling and disconnect
@@ -414,33 +422,27 @@ export class Shell {
 		const directories = normalize(target, dirsToPath(self.currentPath));
 		const absolutePath = dirsToPath(directories);
 
-		if (absolutePath === '~') {
-			self.currentPath = ['~'];
-			self.connectSSE();
-			return;
-		}
-
-		// Check if directory exists via `ls` endpoint
-		const response = await fetch(`/api/ls?path=${encodeURIComponent(absolutePath)}`);
-
-		// Same error handling as in `ls` command
-		try {
-			const data: string[] | { error: string } = await response.json();
-			if (!response.ok && !Array.isArray(data) && data.error) {
-				terminal.writeln(`cd: ${data.error} (Path resolved as: '${absolutePath}')`);
-				return;
-			}
-		} catch {
-			terminal.writeln(`cd: Unexpected error during execution (Status: ${response.status})`);
-			return;
-		}
+		// Try changing directory, if exists
+		const response = await fetch(`/api/cd?path=${encodeURIComponent(absolutePath)}`);
 
 		// If everything succeeded according to plan, save path to current
 		// Note that we disable the ESLint rule here because `cd` is the only
 		// command that should ever be allowed to change the current path (directory)
-		/* eslint-disable-next-line require-atomic-updates */
-		self.currentPath = directories;
-		self.connectSSE();
+		if (response.ok) {
+			/* eslint-disable-next-line require-atomic-updates */
+			self.currentPath = directories;
+			return;
+		}
+
+		// As in the `ls` command, we expect an error message or any
+		// number of unaccounted errors or different response codes.
+		try {
+			const data: { error: string } = await response.json();
+			if (!data.error) throw new Error('Panic');
+			terminal.writeln(`cd: ${data.error}`);
+		} catch {
+			terminal.writeln(`cd: Unexpected error during execution (Status: ${response.status})`);
+		}
 	}
 
 	// This method is used as the `ShellCommandAction` for the builtin `echo` command.
