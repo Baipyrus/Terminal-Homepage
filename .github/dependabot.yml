@@ -12,6 +12,13 @@ updates:
     groups:
       dev-deps:
         dependency-type: 'development'
+        update-types:
+          - 'minor'
+          - 'patch'
+      dev-deps-major:
+        dependency-type: 'development'
+        update-types:
+          - 'major'
       prod-deps:
         dependency-type: 'production'
 
