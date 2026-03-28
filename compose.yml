@@ -13,7 +13,7 @@ services:
       - '8080:80'
       - '8443:443'
     volumes:
-      - ./nginx:/etc/nginx:Z
+      - ./nginx:/etc/nginx:z
     depends_on:
       - th
     restart: unless-stopped
@@ -22,6 +22,6 @@ services:
     build:
       context: .
     volumes:
-      - ./data:/app/data:Z
-      - ./logs:/app/logs:Z
+      - ./data:/app/data:z
+      - ./logs:/app/logs:z
     restart: unless-stopped
