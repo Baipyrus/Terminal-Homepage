@@ -1,3 +1,8 @@
+// WARN: This script is no longer used for automatic application log rotation.
+//       This decision was made based on the fact that the additional Nginx logs
+//       are simply appended to the previous file. This behavior is now mimicked
+//       instead of the log rotation. The script may still be invoked manually.
+
 import { existsSync, unlinkSync, mkdirSync, renameSync } from 'node:fs';
 import { join } from 'node:path';
 
