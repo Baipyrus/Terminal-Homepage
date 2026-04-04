@@ -1,0 +1,31 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": ["config:best-practices", "config:js-app"],
+	"schedule": ["every weekend"],
+	"packageRules": [
+		{
+			"groupName": "Critical security updates",
+			"matchUpdateTypes": ["patch", "minor"],
+			"vulnerabilityAlerts": true,
+			"schedule": ["at any time"],
+			"automerge": true,
+			"minimumReleaseAge": "0 days"
+		},
+		{
+			"groupName": "Production dependencies",
+			"matchDepTypes": ["dependencies"]
+		},
+		{
+			"groupName": "Non-major development dependencies",
+			"matchDepTypes": ["devDependencies"],
+			"matchUpdateTypes": ["minor", "patch"],
+			"automerge": true,
+			"automergeType": "branch"
+		},
+		{
+			"groupName": "Major development dependencies",
+			"matchDepTypes": ["devDependencies"],
+			"matchUpdateTypes": ["major"]
+		}
+	]
+}
