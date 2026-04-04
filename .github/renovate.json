@@ -1,5 +1,5 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": ["config:recommended", "docker:pinDigests", ":dependencyDashboard"],
+	"extends": ["config:best-practices", "config:js-app"],
 	"schedule": ["every weekend"]
 }
