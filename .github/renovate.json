@@ -6,7 +6,7 @@
 		{
 			"groupName": "Critical security updates",
 			"matchUpdateTypes": ["patch", "minor"],
-			"matchVulnerabilities": true,
+			"vulnerabilityAlerts": true,
 			"schedule": ["at any time"],
 			"automerge": true,
 			"minimumReleaseAge": "0 days"
