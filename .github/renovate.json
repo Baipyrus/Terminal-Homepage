@@ -4,16 +4,6 @@
 	"schedule": ["every weekend"],
 	"packageRules": [
 		{
-			"groupName": "Critical security updates",
-			"matchUpdateTypes": ["patch", "minor"],
-			"vulnerabilityAlerts": {
-				"enabled": true
-			},
-			"schedule": ["at any time"],
-			"automerge": true,
-			"minimumReleaseAge": "0 days"
-		},
-		{
 			"groupName": "Production dependencies",
 			"matchDepTypes": ["dependencies"]
 		},
@@ -28,6 +18,16 @@
 			"groupName": "Major development dependencies",
 			"matchDepTypes": ["devDependencies"],
 			"matchUpdateTypes": ["major"]
+		},
+		{
+			"groupName": "Critical security updates",
+			"matchUpdateTypes": ["patch", "minor"],
+			"vulnerabilityAlerts": {
+				"enabled": true
+			},
+			"schedule": ["at any time"],
+			"automerge": true,
+			"minimumReleaseAge": "0 days"
 		}
 	]
 }
