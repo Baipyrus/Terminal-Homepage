@@ -1,0 +1,40 @@
+name: Publish Image
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 2 * * *
+      timezone: Europe/Berlin
+
+permissions:
+  contents: read
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Prepare production environment
+        run: |
+          tee --append .env <<'EOF' >/dev/null
+          # Drizzle
+          DATABASE_URL=${{ secrets.DEPLOY_DB_PATH }}
+
+          ORIGIN="${{ secrets.DEPLOY_ORIGIN }}"
+
+          # Better Auth
+          BETTER_AUTH_SECRET="${{ secrets.DEPLOY_BETTER_AUTH }}"
+
+          # GitHub OAuth
+          GITHUB_CLIENT_ID="${{ secrets.DEPLOY_OAUTH_ID }}"
+          GITHUB_CLIENT_SECRET="${{ secrets.DEPLOY_OAUTH_SECRET }}"
+          EOF
+
+      # Use custom build workflow
+      - uses: ./.github/workflows/build.yml
+        with:
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
