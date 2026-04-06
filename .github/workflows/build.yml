@@ -1,7 +1,18 @@
 name: Docker Compose Stack
 
 on:
+  workflow_call:
+    inputs:
+      image:
+        description: 'The name of the output image when project is built'
+        required: false
+        type: string
   workflow_dispatch:
+    inputs:
+      image:
+        description: 'The name of the output image when project is built'
+        required: false
+        type: string
   pull_request:
     branches: ['main']
 
@@ -16,9 +27,10 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Prepare test environment
+        if: ${{ hashFiles('.env') == '' }}
         run: |
           cp .env.example .env
           sed -i "s/\(BETTER_AUTH_SECRET=\"\)/\1$(uuidgen)/" ./.env
 
       - name: Build the Compose Stack
-        run: docker compose build
+        run: docker build --tag ${{ inputs.image || github.repository }} .
