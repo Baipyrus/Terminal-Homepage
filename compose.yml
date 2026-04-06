@@ -12,8 +12,7 @@ services:
     restart: unless-stopped
 
   th:
-    build:
-      context: .
+    image: ghcr.io/Baipyrus/Terminal-Homepage:latest
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
