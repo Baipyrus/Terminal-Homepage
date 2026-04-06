@@ -21,7 +21,7 @@
 		},
 		{
 			"groupName": "Critical security updates",
-			"matchUpdateTypes": ["patch", "minor"],
+			"matchUpdateTypes": ["patch"],
 			"vulnerabilityAlerts": {
 				"enabled": true
 			},
@@ -29,5 +29,9 @@
 			"automerge": true,
 			"minimumReleaseAge": "0 days"
 		}
-	]
+	],
+	"vulnerabilityAlerts": {
+		"enabled": true
+	},
+	"onboarding": true
 }
