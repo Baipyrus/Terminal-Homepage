@@ -1,5 +1,5 @@
 # Uses the latest LTS release of NodeJS
-FROM node:25.9.0@sha256:bcc74cb249480aa783f629ca82645dc3fe3edb1c3f0919fa4d046363163b876a AS builder
+FROM node:25.9.0@sha256:2495bb8bc48c8a04438f9c8260add59c6b4a214741a3bfbe30ad237b3036a0c8 AS builder
 
 # Stores the project files in /app
 WORKDIR /app
@@ -19,7 +19,7 @@ RUN npm run build
 RUN rm -f ./data/local.db
 RUN npm run db:push -- --force
 
-FROM node:25.9.0@sha256:bcc74cb249480aa783f629ca82645dc3fe3edb1c3f0919fa4d046363163b876a
+FROM node:25.9.0@sha256:2495bb8bc48c8a04438f9c8260add59c6b4a214741a3bfbe30ad237b3036a0c8
 
 # Sets the production runtime user
 USER node:node
