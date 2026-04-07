@@ -1,10 +1,15 @@
+# WARN: This workflow is entirely discouraged because of the simple reason that this
+#       project doesn't support building without production ready secrets (see step
+#       "prepare production environment" below). Since this environment gets saved
+#       to a file within the image itself, a publicly accessible image would leak
+#       all secrets within it. The only known solutions without changing the project
+#       structure and build process is to provide private images only or build
+#       the project on the server yourself.
+
 name: Publish Image
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: 0 2 * * *
-      timezone: Europe/Berlin
 
 permissions:
   contents: read
