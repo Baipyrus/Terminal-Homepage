@@ -21,4 +21,4 @@ jobs:
           sed -i "s/\(BETTER_AUTH_SECRET=\"\)/\1$(uuidgen)/" ./.env
 
       - name: Build the Compose Stack
-        run: docker compose build
+        run: docker build --tag ${{ github.repository }} .
