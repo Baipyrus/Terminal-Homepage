@@ -33,5 +33,9 @@
 	"vulnerabilityAlerts": {
 		"enabled": true
 	},
-	"onboarding": true
+	"onboarding": true,
+	"lockFileMaintenance": {
+		"enabled": true,
+		"automerge": true
+	}
 }
