@@ -18,6 +18,11 @@
 			"groupName": "Major development dependencies",
 			"matchDepTypes": ["devDependencies"],
 			"matchUpdateTypes": ["major"]
+		},
+		{
+			"matchUpdateTypes": ["digest"],
+			"automerge": true,
+			"automergeType": "branch"
 		}
 	],
 	"vulnerabilityAlerts": {
