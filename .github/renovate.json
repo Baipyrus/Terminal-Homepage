@@ -18,16 +18,14 @@
 			"groupName": "Major development dependencies",
 			"matchDepTypes": ["devDependencies"],
 			"matchUpdateTypes": ["major"]
-		},
-		{
-			"groupName": "Critical security updates",
-			"matchUpdateTypes": ["patch", "minor"],
-			"vulnerabilityAlerts": {
-				"enabled": true
-			},
-			"schedule": ["at any time"],
-			"automerge": true,
-			"minimumReleaseAge": "0 days"
 		}
-	]
+	],
+	"vulnerabilityAlerts": {
+		"enabled": true
+	},
+	"onboarding": true,
+	"lockFileMaintenance": {
+		"enabled": true,
+		"automerge": true
+	}
 }
