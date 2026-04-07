@@ -39,7 +39,16 @@ CLAUDE.md
 .claudeignore
 CODEX.md
 
-# Other minor entries
-.dockerignore
+# Functional directories
+# Nginx Logs:
 nginx/logs/
+!nginx/logs/.gitkeep
+# App Logs:
+logs/
+!logs/.gitkeep
+# App Data:
+data/
+!data/.gitkeep
+
+# Other
 .git

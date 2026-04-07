@@ -16,7 +16,6 @@ RUN npm run postinstall
 RUN npm run build
 
 # Initialize database with drizzle
-RUN rm -f ./data/local.db
 RUN npm run db:push -- --force
 
 FROM node:25.9.0@sha256:2495bb8bc48c8a04438f9c8260add59c6b4a214741a3bfbe30ad237b3036a0c8
