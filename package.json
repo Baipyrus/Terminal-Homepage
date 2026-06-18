@@ -58,7 +58,7 @@
 		"vite": "8.0.16"
 	},
 	"dependencies": {
-		"better-sqlite3": "12.10.0",
+		"better-sqlite3": "12.11.1",
 		"winston": "3.19.0"
 	}
 }
