@@ -8,6 +8,13 @@
 			"matchDepTypes": ["dependencies"]
 		},
 		{
+			"groupName": "Non-major docker or workflow dependencies",
+			"matchDatasources": ["docker", "github-digest", "github-runners", "github-tags"],
+			"matchDepTypes": ["dependencies"],
+			"matchUpdateTypes": ["minor", "patch"],
+			"automerge": true
+		},
+		{
 			"groupName": "Non-major development dependencies",
 			"matchDepTypes": ["devDependencies"],
 			"matchUpdateTypes": ["minor", "patch"],
@@ -26,7 +33,8 @@
 		}
 	],
 	"vulnerabilityAlerts": {
-		"enabled": true
+		"enabled": true,
+		"automerge": true
 	},
 	"lockFileMaintenance": {
 		"enabled": true,
