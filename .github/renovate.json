@@ -4,15 +4,15 @@
 	"schedule": ["* 0-3 * * *"],
 	"packageRules": [
 		{
-			"groupName": "Production dependencies",
-			"matchDepTypes": ["dependencies"]
-		},
-		{
 			"groupName": "Non-major docker or workflow dependencies",
 			"matchDatasources": ["docker", "github-digest", "github-runners", "github-tags"],
 			"matchDepTypes": ["dependencies"],
 			"matchUpdateTypes": ["minor", "patch"],
 			"automerge": true
+		},
+		{
+			"groupName": "Production dependencies",
+			"matchDepTypes": ["dependencies"]
 		},
 		{
 			"groupName": "Non-major development dependencies",
