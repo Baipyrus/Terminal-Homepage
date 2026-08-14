@@ -12,9 +12,9 @@ services:
     restart: unless-stopped
 
   th:
-    build:
-      context: .
+    image: ghcr.io/baipyrus/terminal-homepage:main
     volumes:
-      - ./data:/app/data
       - ./logs:/app/logs
+    environment:
+      NODE_ENV: 'production'
     restart: unless-stopped

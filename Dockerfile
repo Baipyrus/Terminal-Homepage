@@ -7,6 +7,12 @@ WORKDIR /app
 COPY ./package.json ./
 COPY ./package-lock.json ./
 
+# Write default environment variables
+# NOTE: Should be overwridden in production use.
+# Can be copied from a temporary countainer to
+# create a persistent database.
+ENV DATABASE_URL="file:local.db"
+
 # Reinstalls all dependencies cleanly
 RUN npm ci
 
@@ -28,15 +34,7 @@ WORKDIR /app
 
 # Copies production build to the image
 COPY --from=builder --chown=node:node /app/build ./build/
-COPY --from=builder --chown=node:node /app/data ./data/
-
-# Copy runtime dependencies
-COPY --chown=node:node ./scripts/rotate-logs.js ./scripts/
-COPY --chown=node:node ./package.json ./
-COPY --chown=node:node ./.env ./
-
-# Translate relative path to absolute in container
-RUN sed -i 's/\(DATABASE_URL=\)/\1\/app\//' ./.env
+COPY --from=builder --chown=node:node /app/local.db ./
 
 # NOTE: All neccessary files should already have been
 # installed/copied (see: `npm run postbuild:install`).
@@ -44,4 +42,4 @@ RUN sed -i 's/\(DATABASE_URL=\)/\1\/app\//' ./.env
 EXPOSE 3000
 
 # Starts the node server
-CMD ["npm", "run", "prod"]
+CMD [ "node", "./build" ]

@@ -15,10 +15,5 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Prepare test environment
-        run: |
-          cp .env.example .env
-          sed -i "s/\(BETTER_AUTH_SECRET=\"\)/\1$(uuidgen)/" ./.env
-
       - name: Build the Compose Stack
         run: docker build --tag "${GITHUB_REPOSITORY,,}" .

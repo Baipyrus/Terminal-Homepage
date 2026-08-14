@@ -7,6 +7,8 @@ import logger from '$lib/server/Logger';
 import { BAD_REQUEST } from '$lib/constants/http';
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
+	if (building || !auth) return await resolve(event);
+
 	const session = await auth.api.getSession({ headers: event.request.headers });
 	const { locals } = event;
 
