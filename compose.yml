@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
 
   th:
-    image: ghcr.io/baipyrus/terminal-homepage:main
+    image: ghcr.io/baipyrus/terminal-homepage:main@sha256:5bb4d31c55442c572946a481299424cbd6ade92a9bb8d6407944dcc7592b7623
     volumes:
       - ./logs:/app/logs
     environment:
