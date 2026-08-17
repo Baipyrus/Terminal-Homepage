@@ -4,8 +4,7 @@ import { sveltekitCookies } from 'better-auth/svelte-kit';
 import { env } from '$env/dynamic/private';
 import { getRequestEvent } from '$app/server';
 import { db } from '$lib/server/db';
-import { dev } from '$app/env';
-import { building } from '$app/env';
+import { dev, building } from '$app/env';
 
 const originURL = dev ? env.ORIGIN_DEV : env.ORIGIN;
 const githubId = dev ? env.GITHUB_CLIENT_ID_DEV : env.GITHUB_CLIENT_ID;
