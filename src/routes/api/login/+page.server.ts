@@ -1,10 +1,18 @@
 import { error, redirect } from '@sveltejs/kit';
 import { auth } from '$lib/server/auth';
-import { FOUND, BAD_REQUEST } from '$lib/constants/http';
+import { FOUND, BAD_REQUEST, INTERNAL_SERVER_ERROR } from '$lib/constants/http';
 import type { PageServerLoad } from './$types';
 import logger from '$lib/server/Logger';
+import { building } from '$app/env';
 
 export const load: PageServerLoad = async () => {
+	if (!building || !auth) {
+		logger.error('Auth instance was not set during social sign-in', { label: 'AUTH' });
+
+		// Notify frontend of failed sign-out
+		return error(INTERNAL_SERVER_ERROR, { message: 'Social sign-in failed' });
+	}
+
 	const result = await auth.api.signInSocial({
 		body: {
 			provider: 'github',
