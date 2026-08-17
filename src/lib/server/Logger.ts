@@ -1,4 +1,4 @@
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import { createLogger, format, transports, config } from 'winston';
 
 // Extract winston members to be used below
