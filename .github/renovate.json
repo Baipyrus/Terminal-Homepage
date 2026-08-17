@@ -6,7 +6,6 @@
 		{
 			"groupName": "Non-major docker or workflow dependencies",
 			"matchDatasources": ["docker", "github-digest", "github-runners", "github-tags"],
-			"matchDepTypes": ["dependencies"],
 			"matchUpdateTypes": ["minor", "patch"],
 			"automerge": true
 		},
