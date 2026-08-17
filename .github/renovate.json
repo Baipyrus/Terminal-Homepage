@@ -29,6 +29,12 @@
 			"matchUpdateTypes": ["digest"],
 			"automerge": true,
 			"automergeType": "branch"
+		},
+		{
+			"description": "Don't update our own image",
+			"matchDatasources": ["docker"],
+			"matchDepNames": ["ghcr.io/baipyrus/terminal-homepage"],
+			"enabled": false
 		}
 	],
 	"vulnerabilityAlerts": {
