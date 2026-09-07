@@ -28,7 +28,7 @@
 	},
 	"devDependencies": {
 		"@battlefieldduck/xterm-svelte": "2.3.0",
-		"@eslint/compat": "2.1.0",
+		"@eslint/compat": "2.1.1",
 		"@eslint/js": "10.0.1",
 		"@sveltejs/adapter-node": "5.5.7",
 		"@sveltejs/kit": "2.70.3",
@@ -42,7 +42,7 @@
 		"better-auth": "1.7.2",
 		"drizzle-kit": "0.31.10",
 		"drizzle-orm": "0.45.2",
-		"eslint": "10.9.1",
+		"eslint": "10.10.0",
 		"eslint-config-prettier": "10.1.8",
 		"eslint-plugin-svelte": "3.23.0",
 		"globals": "17.12.0",
