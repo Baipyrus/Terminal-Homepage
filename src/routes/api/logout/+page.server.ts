@@ -8,7 +8,7 @@ import { building } from '$app/env';
 export const load: PageServerLoad = async ({ locals, request }) => {
 	if (!locals.user) return error(UNAUTHORIZED, 'Unauthorized');
 
-	if (!building || !auth) {
+	if (building || !auth) {
 		logger.error('Auth instance was not set during sign-out', { label: 'AUTH' });
 
 		// Notify frontend of failed sign-out

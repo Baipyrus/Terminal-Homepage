@@ -6,7 +6,7 @@ import logger from '$lib/server/Logger';
 import { building } from '$app/env';
 
 export const load: PageServerLoad = async () => {
-	if (!building || !auth) {
+	if (building || !auth) {
 		logger.error('Auth instance was not set during social sign-in', { label: 'AUTH' });
 
 		// Notify frontend of failed sign-out
