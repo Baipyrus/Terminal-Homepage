@@ -42,12 +42,12 @@
 		"auth": "1.7.7",
 		"better-auth": "1.7.7",
 		"drizzle-kit": "0.31.11",
-		"drizzle-orm": "0.45.3",
+		"drizzle-orm": "0.45.4",
 		"eslint": "10.12.0",
 		"eslint-config-prettier": "10.1.8",
-		"eslint-plugin-svelte": "3.23.0",
+		"eslint-plugin-svelte": "3.23.1",
 		"globals": "17.13.0",
-		"prettier": "3.9.9",
+		"prettier": "3.9.10",
 		"prettier-plugin-svelte": "4.1.1",
 		"prettier-plugin-tailwindcss": "0.8.1",
 		"svelte": "5.57.2",
@@ -56,7 +56,7 @@
 		"tsx": "4.23.15",
 		"typescript": "6.0.3",
 		"typescript-eslint": "8.71.1",
-		"vite": "8.3.3"
+		"vite": "8.3.4"
 	},
 	"dependencies": {
 		"better-sqlite3": "13.0.3",
