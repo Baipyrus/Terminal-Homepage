@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit';
 import { db } from '#lib/server/db/index.js';
 import { messenger, Message } from '#lib/server/messenger/index.js';
 import { directory } from '#lib/server/db/schema.js';
@@ -12,20 +11,20 @@ const TOP_MOST_DIR = 1;
 const OMIT_CHILD_PATH = -1;
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	if (!locals.user) return json({ error: 'Unauthorized' }, { status: UNAUTHORIZED });
+	if (!locals.user) return Response.json({ error: 'Unauthorized' }, { status: UNAUTHORIZED });
 
 	const { path }: { path: string } = await request.json();
 
 	// Minimal user input checks
 	if (!path || !path.startsWith('~'))
-		return json({ error: 'Invalid path' }, { status: BAD_REQUEST });
+		return Response.json({ error: 'Invalid path' }, { status: BAD_REQUEST });
 
 	// Check if parent directory of path exists (unless it's a top-level dir under ~)
 	const parts = path.split('/');
 	const parent = parts.slice(PATH_START, OMIT_CHILD_PATH).join('/');
 	if (parts.length > TOP_MOST_DIR) {
 		if (parent !== '~' && !exists(parent))
-			return json({ error: 'Parent directory does not exist' }, { status: BAD_REQUEST });
+			return Response.json({ error: 'Parent directory does not exist' }, { status: BAD_REQUEST });
 	}
 
 	// Create directory entry in Database

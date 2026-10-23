@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit';
 import { db } from '#lib/server/db/index.js';
 import { directory } from '#lib/server/db/schema.js';
 import { eq, like, and, not } from 'drizzle-orm';
@@ -9,13 +8,13 @@ import { BAD_REQUEST, UNAUTHORIZED } from '#lib/constants/http.js';
 const OFFSET_INDEX = 1;
 
 export const GET: RequestHandler = async ({ url, locals }) => {
-	if (!locals.user) return json({ error: 'Unauthorized' }, { status: UNAUTHORIZED });
+	if (!locals.user) return Response.json({ error: 'Unauthorized' }, { status: UNAUTHORIZED });
 
 	const parent = url.searchParams.get('path') || '~';
 
 	// Ensure the parent itself exists (if it's not root '~')
 	if (parent !== '~' && !exists(parent))
-		return json({ error: 'Parent directory does not exist' }, { status: BAD_REQUEST });
+		return Response.json({ error: 'Parent directory does not exist' }, { status: BAD_REQUEST });
 
 	// Find all directories that start with "parent/"
 	const all = await db
@@ -29,5 +28,5 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		return !relative.includes('/');
 	});
 
-	return json(filtered.map((d) => d.path.split('/').pop()));
+	return Response.json(filtered.map((d) => d.path.split('/').pop()));
 };

@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit';
 import { db } from '#lib/server/db/index.js';
 import { messenger, Message } from '#lib/server/messenger/index.js';
 import { directory } from '#lib/server/db/schema.js';
@@ -14,18 +13,20 @@ const PATH_START = 0;
 const OMIT_CHILD_PATH = -1;
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	if (!locals.user) return json({ error: 'Unauthorized' }, { status: UNAUTHORIZED });
+	if (!locals.user) return Response.json({ error: 'Unauthorized' }, { status: UNAUTHORIZED });
 
 	const { path }: { path: string } = await request.json();
 
 	// Minimal user input checks
 	if (!path || !path.startsWith('~'))
-		return json({ error: 'Invalid path' }, { status: BAD_REQUEST });
+		return Response.json({ error: 'Invalid path' }, { status: BAD_REQUEST });
 
-	if (path === '~') return json({ error: 'Cannot remove root directory' }, { status: BAD_REQUEST });
+	if (path === '~')
+		return Response.json({ error: 'Cannot remove root directory' }, { status: BAD_REQUEST });
 
 	// Check if directory exists
-	if (!exists(path)) return json({ error: 'Directory does not exist' }, { status: NOT_FOUND });
+	if (!exists(path))
+		return Response.json({ error: 'Directory does not exist' }, { status: NOT_FOUND });
 
 	// Check if directory is empty of subdirectories
 	const subdirs = await db
@@ -35,11 +36,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.limit(ANY);
 
 	if (subdirs.length > EMPTY)
-		return json({ error: 'Directory may contain subdirectories' }, { status: FORBIDDEN });
+		return Response.json({ error: 'Directory may contain subdirectories' }, { status: FORBIDDEN });
 
 	// Check if any users are connected to it
 	if (messenger.countClients(path) > EMPTY)
-		return json({ error: 'Users may not be connected to directory' }, { status: FORBIDDEN });
+		return Response.json(
+			{ error: 'Users may not be connected to directory' },
+			{ status: FORBIDDEN }
+		);
 
 	// Delete directory entry from Database
 	await db.delete(directory).where(eq(directory.path, path));
