@@ -1,5 +1,5 @@
-import { BAD_REQUEST, FOUND, NOT_FOUND } from '$lib/constants/http';
-import logger from '$lib/server/Logger';
+import { BAD_REQUEST, FOUND, NOT_FOUND } from '#lib/constants/http.js';
+import logger from '#lib/server/Logger.js';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 

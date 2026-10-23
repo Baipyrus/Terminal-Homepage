@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
-import { auth } from '$lib/server/auth';
-import { FOUND, INTERNAL_SERVER_ERROR, UNAUTHORIZED } from '$lib/constants/http';
-import logger from '$lib/server/Logger';
+import { auth } from '#lib/server/auth.js';
+import { FOUND, INTERNAL_SERVER_ERROR, UNAUTHORIZED } from '#lib/constants/http.js';
+import logger from '#lib/server/Logger.js';
 import type { PageServerLoad } from './$types';
 import { building } from '$app/env';
 

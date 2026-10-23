@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { CATPPUCCIN_MOCHA } from '$lib/config/terminal';
+	import { CATPPUCCIN_MOCHA } from '#lib/config/terminal.js';
 </script>
 
 <div

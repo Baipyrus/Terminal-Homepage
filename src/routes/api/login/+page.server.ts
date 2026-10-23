@@ -1,8 +1,8 @@
 import { error, redirect } from '@sveltejs/kit';
-import { auth } from '$lib/server/auth';
-import { FOUND, BAD_REQUEST, INTERNAL_SERVER_ERROR } from '$lib/constants/http';
+import { auth } from '#lib/server/auth.js';
+import { FOUND, BAD_REQUEST, INTERNAL_SERVER_ERROR } from '#lib/constants/http.js';
 import type { PageServerLoad } from './$types';
-import logger from '$lib/server/Logger';
+import logger from '#lib/server/Logger.js';
 import { building } from '$app/env';
 
 export const load: PageServerLoad = async () => {

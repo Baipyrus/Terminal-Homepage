@@ -1,8 +1,8 @@
-import { CONFLICT, UNAUTHORIZED } from '$lib/constants/http';
-import { messenger, type Client, type SlimMessage } from '$lib/server/messenger';
+import { CONFLICT, UNAUTHORIZED } from '#lib/constants/http.js';
+import { messenger, type Client, type SlimMessage } from '#lib/server/messenger/index.js';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import logger from '$lib/server/Logger';
+import logger from '#lib/server/Logger.js';
 
 const KEEP_ALIVE_MILLIS = 30000;
 

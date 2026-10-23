@@ -32,6 +32,7 @@
 		"@eslint/js": "10.0.1",
 		"@sveltejs/adapter-node": "6.0.0",
 		"@sveltejs/kit": "3.1.0",
+		"@sveltejs/load-config": "^0.2.2",
 		"@sveltejs/vite-plugin-svelte": "7.3.1",
 		"@tailwindcss/vite": "4.3.3",
 		"@types/better-sqlite3": "9.6.0",
@@ -61,5 +62,9 @@
 	"dependencies": {
 		"better-sqlite3": "13.0.3",
 		"winston": "3.19.0"
+	},
+	"imports": {
+		"#lib": "./src/lib/index.js",
+		"#lib/*": "./src/lib/*"
 	}
 }

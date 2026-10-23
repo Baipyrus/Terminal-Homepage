@@ -1,6 +1,6 @@
-import { BAD_REQUEST, UNAUTHORIZED } from '$lib/constants/http';
-import { Message, messenger } from '$lib/server/messenger';
-import { exists } from '$lib/server/path';
+import { BAD_REQUEST, UNAUTHORIZED } from '#lib/constants/http.js';
+import { Message, messenger } from '#lib/server/messenger/index.js';
+import { exists } from '#lib/server/path.js';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = ({ url, locals }) => {

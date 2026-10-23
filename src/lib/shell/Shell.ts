@@ -161,7 +161,7 @@ export class Shell {
 				description: 'Login with GitHub',
 				action: ({ terminal }) => {
 					terminal.writeln('Redirecting to login with GitHub...');
-					location.href = resolve('/api/login');
+					location.href = resolve('api/login');
 				}
 			},
 			{
@@ -169,7 +169,7 @@ export class Shell {
 				description: 'Logout from session',
 				action: ({ terminal }) => {
 					terminal.writeln('Logging out...');
-					location.href = resolve('/api/logout');
+					location.href = resolve('api/logout');
 				}
 			},
 			{
@@ -455,10 +455,7 @@ export class Shell {
 		const response = await fetch('/api/echo', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				message: message,
-				channel: dirsToPath(self.currentPath)
-			})
+			body: JSON.stringify({ message, channel: dirsToPath(self.currentPath) })
 		});
 
 		if (response.ok) {

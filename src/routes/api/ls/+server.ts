@@ -1,10 +1,10 @@
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/server/db';
-import { directory } from '$lib/server/db/schema';
+import { db } from '#lib/server/db/index.js';
+import { directory } from '#lib/server/db/schema.js';
 import { eq, like, and, not } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
-import { exists } from '$lib/server/path';
-import { BAD_REQUEST, UNAUTHORIZED } from '$lib/constants/http';
+import { exists } from '#lib/server/path.js';
+import { BAD_REQUEST, UNAUTHORIZED } from '#lib/constants/http.js';
 
 const OFFSET_INDEX = 1;
 

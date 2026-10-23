@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { CATPPUCCIN_MOCHA } from '$lib/config/terminal';
-	import { ANSI_COLOR_RESET, ANSI_COLOR_BLUE, ANSI_COLOR_RED, Shell } from '$lib/shell/Shell';
+	import { CATPPUCCIN_MOCHA } from '#lib/config/terminal.js';
+	import { ANSI_COLOR_RESET, ANSI_COLOR_BLUE, ANSI_COLOR_RED, Shell } from '#lib/shell/Shell.js';
 	import {
 		Xterm,
 		type ITerminalOptions,

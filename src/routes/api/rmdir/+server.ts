@@ -1,11 +1,11 @@
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/server/db';
-import { messenger, Message } from '$lib/server/messenger';
-import { directory } from '$lib/server/db/schema';
+import { db } from '#lib/server/db/index.js';
+import { messenger, Message } from '#lib/server/messenger/index.js';
+import { directory } from '#lib/server/db/schema.js';
 import type { RequestHandler } from './$types';
-import { exists } from '$lib/server/path';
-import { BAD_REQUEST, UNAUTHORIZED, NOT_FOUND, FORBIDDEN } from '$lib/constants/http';
-import logger from '$lib/server/Logger';
+import { exists } from '#lib/server/path.js';
+import { BAD_REQUEST, UNAUTHORIZED, NOT_FOUND, FORBIDDEN } from '#lib/constants/http.js';
+import logger from '#lib/server/Logger.js';
 import { eq, like } from 'drizzle-orm';
 
 const ANY = 1;

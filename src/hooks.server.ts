@@ -1,10 +1,9 @@
-import type { Handle, HandleServerError } from '@sveltejs/kit';
-import { sequence } from '@sveltejs/kit/hooks';
+import { sequence, type Handle, type HandleServerError } from '@sveltejs/kit/hooks';
 import { building } from '$app/env';
-import { auth } from '$lib/server/auth';
+import { auth } from '#lib/server/auth.js';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
-import logger from '$lib/server/Logger';
-import { BAD_REQUEST } from '$lib/constants/http';
+import logger from '#lib/server/Logger.js';
+import { BAD_REQUEST } from '#lib/constants/http.js';
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
 	if (building || !auth) return await resolve(event);

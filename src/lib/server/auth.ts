@@ -1,18 +1,28 @@
 import { betterAuth, type BetterAuthOptions } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { sveltekitCookies } from 'better-auth/svelte-kit';
-import { env } from '$env/dynamic/private';
+
+import {
+	ORIGIN_DEV,
+	ORIGIN,
+	GITHUB_CLIENT_ID_DEV,
+	GITHUB_CLIENT_ID,
+	GITHUB_CLIENT_SECRET_DEV,
+	GITHUB_CLIENT_SECRET,
+	BETTER_AUTH_SECRET
+} from '$app/env/private';
+
 import { getRequestEvent } from '$app/server';
-import { db } from '$lib/server/db';
+import { db } from '#lib/server/db/index.js';
 import { dev, building } from '$app/env';
 
-const originURL = dev ? env.ORIGIN_DEV : env.ORIGIN;
-const githubId = dev ? env.GITHUB_CLIENT_ID_DEV : env.GITHUB_CLIENT_ID;
-const githubSecret = dev ? env.GITHUB_CLIENT_SECRET_DEV : env.GITHUB_CLIENT_SECRET;
+const originURL = dev ? ORIGIN_DEV : ORIGIN;
+const githubId = dev ? GITHUB_CLIENT_ID_DEV : GITHUB_CLIENT_ID;
+const githubSecret = dev ? GITHUB_CLIENT_SECRET_DEV : GITHUB_CLIENT_SECRET;
 
 const betterAuthOptions: BetterAuthOptions = {
 	baseURL: originURL ?? '',
-	secret: env.BETTER_AUTH_SECRET,
+	secret: BETTER_AUTH_SECRET,
 	database: drizzleAdapter(db, { provider: 'sqlite' }),
 	emailAndPassword: { enabled: true },
 	socialProviders: {

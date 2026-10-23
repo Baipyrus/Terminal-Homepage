@@ -1,8 +1,8 @@
-import { messenger, Message } from '$lib/server/messenger';
-import { exists } from '$lib/server/path';
+import { messenger, Message } from '#lib/server/messenger/index.js';
+import { exists } from '#lib/server/path.js';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { NOT_FOUND, UNAUTHORIZED } from '$lib/constants/http';
+import { NOT_FOUND, UNAUTHORIZED } from '#lib/constants/http.js';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) return json({ error: 'Unauthorized' }, { status: UNAUTHORIZED });
