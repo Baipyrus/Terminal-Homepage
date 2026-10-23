@@ -10,7 +10,7 @@ export const load: PageServerLoad = async () => {
 		logger.error('Auth instance was not set during social sign-in', { label: 'AUTH' });
 
 		// Notify frontend of failed sign-out
-		return error(INTERNAL_SERVER_ERROR, { message: 'Social sign-in failed' });
+		return error(INTERNAL_SERVER_ERROR, 'Social sign-in failed');
 	}
 
 	const result = await auth.api.signInSocial({
@@ -25,10 +25,10 @@ export const load: PageServerLoad = async () => {
 	});
 
 	// Redirect to generated social sign in URL from better-auth
-	if (result.url) return redirect(FOUND, result.url);
+	if (result.url) return redirect(FOUND, result.url, { external: true });
 
 	logger.error('Unexpected error during social sign-in', { label: 'AUTH' });
 
 	// Notify frontend of failed social sign-in
-	error(BAD_REQUEST, { message: 'Social sign-in failed' });
+	error(BAD_REQUEST, 'Social sign-in failed');
 };

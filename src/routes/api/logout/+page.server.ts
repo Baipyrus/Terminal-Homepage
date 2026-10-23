@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals, request }) => {
 		logger.error('Auth instance was not set during sign-out', { label: 'AUTH' });
 
 		// Notify frontend of failed sign-out
-		return error(INTERNAL_SERVER_ERROR, { message: 'Sign-out failed' });
+		return error(INTERNAL_SERVER_ERROR, 'Sign-out failed');
 	}
 
 	await auth.api.signOut({
