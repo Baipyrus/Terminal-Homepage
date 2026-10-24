@@ -11,7 +11,7 @@ COPY ./package-lock.json ./
 # NOTE: Should be overwridden in production use.
 # Can be copied from a temporary countainer to
 # create a persistent database.
-ENV DATABASE_URL="file:local.db"
+ENV DATABASE_URL="local.db"
 
 # Reinstalls all dependencies cleanly
 RUN npm ci
