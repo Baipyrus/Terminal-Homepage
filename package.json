@@ -3,6 +3,10 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
+	"engines": {
+		"node": "^25.9.0",
+		"npm": "^11.12.1"
+	},
 	"scripts": {
 		"postinstall": "if [ -e scripts/ ]; then npx tsx scripts/download-font.ts; fi; exit 0",
 		"predev": "npm run-script db:init",
