@@ -7,6 +7,7 @@ import {
 } from './Command';
 import { resolve } from '$app/paths';
 import { normalize, dirsToPath } from './path';
+import { authClient } from '#lib/auth-client.ts';
 
 const EMPTY = 0;
 const SINGLE_ARGUMENT = 1;
@@ -161,7 +162,11 @@ export class Shell {
 				description: 'Login with GitHub',
 				action: ({ terminal }) => {
 					terminal.writeln('Redirecting to login with GitHub...');
-					location.href = resolve('api/login');
+					authClient.signIn.social({
+						provider: 'github',
+						callbackURL: '/api/login/success',
+						errorCallbackURL: '/api/login/error'
+					});
 				}
 			},
 			{
@@ -169,6 +174,7 @@ export class Shell {
 				description: 'Logout from session',
 				action: ({ terminal }) => {
 					terminal.writeln('Logging out...');
+					// NOTE: We log out server-side here so we can log it properly
 					location.href = resolve('api/logout');
 				}
 			},

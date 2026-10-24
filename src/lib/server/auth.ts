@@ -1,4 +1,4 @@
-import { betterAuth, type BetterAuthOptions } from 'better-auth';
+import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { sveltekitCookies } from 'better-auth/svelte-kit';
 
@@ -14,13 +14,13 @@ import {
 
 import { getRequestEvent } from '$app/server';
 import { db } from '#lib/server/db/index.js';
-import { dev, building } from '$app/env';
+import { dev } from '$app/env';
 
 const originURL = dev ? ORIGIN_DEV : ORIGIN;
 const githubId = dev ? GITHUB_CLIENT_ID_DEV : GITHUB_CLIENT_ID;
 const githubSecret = dev ? GITHUB_CLIENT_SECRET_DEV : GITHUB_CLIENT_SECRET;
 
-const betterAuthOptions: BetterAuthOptions = {
+export const auth = betterAuth({
 	baseURL: originURL ?? '',
 	secret: BETTER_AUTH_SECRET,
 	database: drizzleAdapter(db, { provider: 'sqlite' }),
@@ -35,12 +35,4 @@ const betterAuthOptions: BetterAuthOptions = {
 		// make sure this is the last plugin in the array
 		sveltekitCookies(getRequestEvent)
 	]
-};
-
-const getAuthInstance = () => {
-	if (building) return null;
-
-	return betterAuth(betterAuthOptions);
-};
-
-export const auth = getAuthInstance();
+});
