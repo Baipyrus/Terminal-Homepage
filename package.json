@@ -16,6 +16,7 @@
 		"postbuild": "npm run-script postbuild:install && npm run-script postbuild:prompt",
 		"postbuild:install": "cp package.json ./build/ && cp package-lock.json ./build/ && npm ci --omit dev --prefix ./build/",
 		"postbuild:prompt": "read -p \"Do you want to run prod now? (y/N): \" resp && [[ $resp =~ ^[Yy](es)?$ ]] && npm run-script prod; exit 0",
+		"preprod": "bash scripts/inject-origin.sh",
 		"prod": "NODE_ENV=production exec node --env-file=.env ./build/",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",

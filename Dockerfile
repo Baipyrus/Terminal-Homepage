@@ -35,6 +35,7 @@ WORKDIR /app
 # Copies production build to the image
 COPY --from=builder --chown=node:node /app/build ./build/
 COPY --from=builder --chown=node:node /app/local.db ./
+COPY --from=builder --chown=node:node /app/scripts/inject-origin.sh ./scripts/
 
 # NOTE: All neccessary files should already have been
 # installed/copied (see: `npm run postbuild:install`).
@@ -42,4 +43,4 @@ COPY --from=builder --chown=node:node /app/local.db ./
 EXPOSE 3000
 
 # Starts the node server
-CMD [ "node", "./build" ]
+CMD ["sh", "-c", "bash scripts/inject-origin.sh && exec node ./build"]
