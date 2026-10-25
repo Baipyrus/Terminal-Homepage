@@ -15,10 +15,17 @@ const SINGLE_ARGUMENT = 1;
 const CURRENT_LINE_TRIM_END = -1;
 const CURRENT_LINE_START = 0;
 
+const HISTORY_LIMIT = 50;
+const HISTORY_INDEX_DEFAULT = -1;
+const HISTORY_INDEX_STEP = 1;
+
 const RIGHT_ARROW_KEY = '\x1b[C';
 const LEFT_ARROW_KEY = '\x1b[D';
+const UP_ARROW_KEY = '\x1b[A';
+const DOWN_ARROW_KEY = '\x1b[B';
 
 // ANSI Escape Sequences for terminal control
+const ANSI_LINE_START_IDX = 1;
 const ANSI_SAVE_CURSOR = '\x1b[s';
 const ANSI_RESTORE_CURSOR = '\x1b[u';
 const ANSI_CLEAR_LINE_AFTER = '\x1b[K';
@@ -42,14 +49,20 @@ export class Shell {
 	private currentPath: string[] = ['~'];
 	private cursorPosition: number = 0;
 	private username: string = 'root';
+	private history: string[] = [];
+	private historyIndex: number = -1;
+	private historyCache: string = '';
 
 	constructor(terminal: Terminal) {
 		this._TERMINAL = terminal;
-		this._PROMPT = `${ANSI_COLOR_GREEN}$user@${ANSI_COLOR_BLUE}baipyr.us ${ANSI_COLOR_YELLOW}$pwd${ANSI_COLOR_RESET}$ `;
+		this._PROMPT = `$user@baipyr.us $pwd$ `;
 
 		// Register default commands
 		this.loadBuiltinCommands();
 	}
+
+	private ANSI_CURSOR_ABS = (idx = ANSI_LINE_START_IDX) =>
+		`\x1b[${idx + this.preparePrompt(false).length}G`;
 
 	public Initialize(props: ShellProps) {
 		// Set username if login successful
@@ -202,6 +215,19 @@ export class Shell {
 				name: 'echo',
 				description: 'Send messsage in directory',
 				action: (props) => this.cmd_echo(this, props)
+			},
+			{
+				name: 'history',
+				description: 'Display command history',
+				action: ({ terminal }) => {
+					if (this.history.length === EMPTY) {
+						terminal.writeln('No command history available.');
+					} else {
+						this.history.slice(-HISTORY_LIMIT).forEach((cmd, index) => {
+							terminal.writeln(`${index + HISTORY_INDEX_STEP}: ${cmd}`);
+						});
+					}
+				}
 			}
 		);
 	}
@@ -221,17 +247,26 @@ export class Shell {
 	}
 
 	// Handle shell prompt preparation with custom variables
-	private displayPrompt() {
+	private preparePrompt(colorize = true) {
 		// Lowercase conversion because of custom prompt variable sensitivity
 		let prompt = this._PROMPT.toLowerCase();
 
-		// Prepare prompt by replacing custom variables
-		prompt = prompt.replace('$pwd', dirsToPath(this.currentPath));
 		// Prepare prompt by replacing username from GitHub login
-		prompt = prompt.replace('$user', this.username);
+		prompt = prompt.replace('$user', (colorize ? ANSI_COLOR_GREEN : '') + this.username);
+		// Prepare prompt by colorizing hostname
+		prompt = prompt.replace('baipyr.us', `${colorize ? ANSI_COLOR_BLUE : ''}baipyr.us`);
+		// Prepare prompt by replacing custom variables
+		prompt = prompt.replace(
+			'$pwd',
+			(colorize ? ANSI_COLOR_YELLOW : '') + dirsToPath(this.currentPath)
+		);
+		// Prepare prompt by resetting color at the end
+		prompt = prompt.replace(/\$ $/, `${colorize ? ANSI_COLOR_RESET : ''}$ `);
 
-		this._TERMINAL.write(prompt);
+		return prompt;
 	}
+
+	private displayPrompt = () => this._TERMINAL.write(this.preparePrompt());
 
 	private async handleInput(data: string) {
 		// Boolean check to prevent out-of-bounds operations when the cursor is at the start
@@ -257,7 +292,7 @@ export class Shell {
 				this.cursorPosition = CURRENT_LINE_START;
 				await this.executeCommand(userInput);
 				this.displayPrompt();
-
+				this.historyIndex = HISTORY_INDEX_DEFAULT;
 				break;
 			// BACKSPACE
 			case '\u007f':
@@ -290,6 +325,61 @@ export class Shell {
 				this.cursorPosition++;
 				this._TERMINAL.write(data);
 				break;
+			// HOME KEY
+			case '\x1b[H':
+				this.cursorPosition = 0;
+				this._TERMINAL.write(this.ANSI_CURSOR_ABS());
+				break;
+			// END KEY
+			case '\x1b[F':
+				this.cursorPosition = this.currentLine.length;
+				this._TERMINAL.write(this.ANSI_CURSOR_ABS(this.currentLine.length + ANSI_LINE_START_IDX));
+				break;
+			// ARROW KEY UP
+			case UP_ARROW_KEY: {
+				if (this.history.length === EMPTY) break;
+
+				// ONLY FIRST up arrow skips to latest history entry (no wrap)
+				if (this.historyIndex === HISTORY_INDEX_DEFAULT) {
+					this.historyIndex = this.history.length - HISTORY_INDEX_STEP;
+					this.historyCache = this.currentLine;
+					// Afterwards, only decrement until reached oldest entry
+				} else if (this.historyIndex >= HISTORY_INDEX_STEP) this.historyIndex--;
+
+				const selected = this.history[this.historyIndex];
+				this.currentLine = selected;
+				this.cursorPosition = selected.length;
+
+				// Move cursor to start of line, clear it, write command
+				this._TERMINAL.write(`${this.ANSI_CURSOR_ABS()}${ANSI_CLEAR_LINE_AFTER}${selected}`);
+				break;
+			}
+			// ARROW KEY DOWN
+			case DOWN_ARROW_KEY: {
+				// Ignore if already at most recent entry in history
+				if (this.history.length === EMPTY || this.historyIndex === HISTORY_INDEX_DEFAULT) break;
+
+				// Keep incrementing through history
+				if (this.historyIndex < this.history.length - HISTORY_INDEX_STEP) this.historyIndex++;
+				// Or if at the end of array, reset to cached item and default position
+				else {
+					this.historyIndex = HISTORY_INDEX_DEFAULT;
+					this.currentLine = this.historyCache;
+					this.cursorPosition = this.historyCache.length;
+					this._TERMINAL.write(
+						`${this.ANSI_CURSOR_ABS()}${ANSI_CLEAR_LINE_AFTER}${this.currentLine}`
+					);
+					break;
+				}
+
+				const selected = this.history[this.historyIndex];
+				this.currentLine = selected;
+				this.cursorPosition = selected.length;
+
+				// Move cursor to start of line, clear it, write command
+				this._TERMINAL.write(`${this.ANSI_CURSOR_ABS()}${ANSI_CLEAR_LINE_AFTER}${selected}`);
+				break;
+			}
 			default:
 				// Check if input data is in printable range before writing to terminal
 				if (data < ' ' || data > '~') break;
@@ -308,10 +398,12 @@ export class Shell {
 
 	private async executeCommand(command: string) {
 		// No command was supplied
-		if (command === '') return;
+		const trimCmd = command.trim();
+		if (trimCmd === '') return;
+		this.history.push(trimCmd);
 
 		// Extract command syntax and try to find command
-		const [cmd, ...args] = command.split(' ');
+		const [cmd, ...args] = trimCmd.split(' ');
 		const registeredCommand = this._COMMANDS.get(cmd);
 
 		// Command not found error:
