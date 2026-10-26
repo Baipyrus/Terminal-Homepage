@@ -15,9 +15,10 @@ const SINGLE_ARGUMENT = 1;
 const CURRENT_LINE_TRIM_END = -1;
 const CURRENT_LINE_START = 0;
 
-const HISTORY_LIMIT = 50;
+const HISTORY_LIMIT = 100;
 const HISTORY_INDEX_DEFAULT = -1;
 const HISTORY_INDEX_STEP = 1;
+const HISTORY_STORAGE_KEY = 'shell_history';
 
 const RIGHT_ARROW_KEY = '\x1b[C';
 const LEFT_ARROW_KEY = '\x1b[D';
@@ -71,6 +72,9 @@ export class Shell {
 			this.connectSSE();
 		}
 
+		// Persistently save command history
+		this.loadLocalHistory();
+
 		// Accept custom prompt, if specified
 		if (props.prompt) this._PROMPT = props.prompt;
 
@@ -80,6 +84,31 @@ export class Shell {
 		// Initialize terminal with shell prompt and input handler
 		this.displayPrompt();
 		this._TERMINAL.onData((data) => this.handleInput(data));
+	}
+
+	public loadLocalHistory() {
+		try {
+			const storage = localStorage.getItem(HISTORY_STORAGE_KEY);
+			if (!storage) return;
+
+			const history = JSON.parse(storage);
+			if (!history || !Array.isArray(history)) return;
+
+			this.history = history;
+			// Explicitly reset index in case of reloading history
+			this.historyIndex = -1;
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	public saveLocalHistory() {
+		try {
+			const serialized = JSON.stringify(this.history);
+			localStorage.setItem(HISTORY_STORAGE_KEY, serialized);
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
 	public tryDestroySSE(notify?: boolean) {
@@ -400,7 +429,13 @@ export class Shell {
 		// No command was supplied
 		const trimCmd = command.trim();
 		if (trimCmd === '') return;
+
+		// Enforce history limit:
 		this.history.push(trimCmd);
+		if (this.history.length > HISTORY_LIMIT) this.history.shift();
+
+		// Persistently save command history
+		this.saveLocalHistory();
 
 		// Extract command syntax and try to find command
 		const [cmd, ...args] = trimCmd.split(' ');
