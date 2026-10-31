@@ -35,6 +35,11 @@
 			"matchDatasources": ["docker"],
 			"matchDepNames": ["ghcr.io/baipyrus/terminal-homepage"],
 			"enabled": false
+		},
+		{
+			"description": "Blocked: TS 7 API is not yet compatible",
+			"matchPackageNames": ["typescript"],
+			"allowedVersions": "<7"
 		}
 	],
 	"vulnerabilityAlerts": {
