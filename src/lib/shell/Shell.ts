@@ -151,11 +151,11 @@ export class Shell {
 
 		this._EVENTSOURCE.onmessage = (event) => {
 			const message = JSON.parse(event.data);
-			if (!message.user || !message.content) return;
+			if (!message.username || !message.content) return;
 
 			// Interrupt user input, write received message to terminal instead
 			this.interruptMessage(
-				`${ANSI_COLOR_YELLOW}[${message.user}]:${ANSI_COLOR_RESET} ${message.content}`
+				`${ANSI_COLOR_YELLOW}[${message.username}]:${ANSI_COLOR_RESET} ${message.content}`
 			);
 		};
 
