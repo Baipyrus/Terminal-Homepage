@@ -24,5 +24,7 @@ export default defineConfig({
 			},
 			adapter: adapter()
 		})
-	]
+	],
+	// We use our own logging:
+	logLevel: 'silent'
 });
