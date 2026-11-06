@@ -5,7 +5,7 @@
 	"type": "module",
 	"engines": {
 		"node": "^26.0.0",
-		"npm": "^11.12.1"
+		"npm": "^12.0.0"
 	},
 	"scripts": {
 		"postinstall": "if [ -e scripts/ ]; then npx tsx scripts/download-font.ts; fi; exit 0",
