@@ -1,5 +1,5 @@
 # Uses the latest LTS release of NodeJS
-FROM node:26.13.0@sha256:6d2c7d5d074bf72f81ddc252b4fbb5d625bc028eeda49cb4b8c2ff8eda1ee617 AS builder
+FROM node:26.13.0@sha256:438603bbb5cda404b9416f0b5c8026f61501ab911760d861ec28c36b5d675725 AS builder
 
 # Stores the project files in /app
 WORKDIR /app
@@ -24,7 +24,7 @@ RUN npm run build
 # Initialize database with drizzle
 RUN npm run db:push -- --force
 
-FROM node:26.13.0@sha256:6d2c7d5d074bf72f81ddc252b4fbb5d625bc028eeda49cb4b8c2ff8eda1ee617
+FROM node:26.13.0@sha256:438603bbb5cda404b9416f0b5c8026f61501ab911760d861ec28c36b5d675725
 
 # Sets the production runtime user
 USER node:node
